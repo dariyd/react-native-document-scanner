@@ -5217,8 +5217,9 @@ react-native-codegen@^0.0.8:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
-react-native-rn-document-scanner@../react-native-rn-document-scanner:
+"react-native-document-scanner@https://github.com/dariyd/react-native-document-scanner":
   version "1.0.0"
+  resolved "https://github.com/dariyd/react-native-document-scanner#97838747427d2ed0232968c6d305701256e8b9cd"
 
 react-native@0.67.0:
   version "0.67.0"

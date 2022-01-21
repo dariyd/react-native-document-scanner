@@ -129,7 +129,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     }
     
     [controller dismissViewControllerAnimated:true completion:^{
-        self.callback(@[scannedImages]);
+        self.callback(@[@{@"images": scannedImages}]);
     }];
 }
 

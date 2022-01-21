@@ -272,7 +272,7 @@ PODS:
   - React-jsinspector (0.67.0)
   - React-logger (0.67.0):
     - glog
-  - react-native-rn-document-scanner (1.0.0):
+  - react-native-document-scanner (1.0.0):
     - React
   - React-perflogger (0.67.0)
   - React-RCTActionSheet (0.67.0):
@@ -385,7 +385,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-rn-document-scanner (from `../node_modules/react-native-rn-document-scanner`)
+  - react-native-document-scanner (from `../node_modules/react-native-document-scanner`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -452,8 +452,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
-  react-native-rn-document-scanner:
-    :path: "../node_modules/react-native-rn-document-scanner"
+  react-native-document-scanner:
+    :path: "../node_modules/react-native-document-scanner"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -512,7 +512,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 3001f865cfd2c66c1298f427be47b8797ae5843b
   React-jsinspector: c9d1ddf4b1efbcf90323e3581ccff200cf4de346
   React-logger: 5d42caeaf0c31a9b29efb33e10e7f7031f958bfd
-  react-native-rn-document-scanner: 03d8e93ce79d5e60fb83a652e86e1008a5036bfb
+  react-native-document-scanner: 193d547f3318a24c207dcf00256bdc5bf8471a9e
   React-perflogger: 9454d63e7027e0830fa3e527628558160684f5dd
   React-RCTActionSheet: 240d798e2f5bd1ba2e85503a00fd390f560e6827
   React-RCTAnimation: 0ebf0df36838057097b8c6a30d1036531f8c7b1e

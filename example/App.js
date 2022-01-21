@@ -59,7 +59,9 @@ const App = () => {
   const startScan = async () => {
     const results = await launchScanner({ quality: 0.8 });
     console.log('results ', results);
-    setImages(results);
+    if (Array.isArray(results?.images) && results?.images?.length) {
+      setImages(results.images);
+    }
   };
 
   const backgroundStyle = {
