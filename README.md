@@ -37,9 +37,6 @@ See [Options](#options) for further information on `options`.
 
 The `callback` will be called with a response object, refer to [The Response Object](#the-response-object).
 
-See [Options](#options) for further information on `options`.
-
-The `callback` will be called with a response object, refer to [The Response Object](#the-response-object).
 
 ## Options
 
