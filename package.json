@@ -8,9 +8,6 @@
   "files": [
     "README.md",
     "CHANGELOG.md",
-    "MIGRATION.md",
-    "GOOGLE_PLAY_REQUIREMENTS.md",
-    "RN_078_UPDATE.md",
     "android",
     "index.js",
     "index.d.ts",
@@ -45,11 +42,11 @@
   "readmeFilename": "README.md",
   "peerDependencies": {
     "react": ">=18.2.0",
-    "react-native": ">=0.78.0"
+    "react-native": ">=0.77.3"
   },
   "devDependencies": {
     "react": "^18.3.1",
-    "react-native": "^0.78.0"
+    "react-native": "^0.77.3"
   },
   "codegenConfig": {
     "name": "RNDocumentScannerSpec",
