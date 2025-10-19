@@ -27,6 +27,5 @@ export interface Spec extends TurboModule {
   launchScanner(options: Options, callback: (result: ScanResult) => void): void;
 }
 
-// @ts-ignore - TurboModuleRegistry type signature varies by RN version
-export default TurboModuleRegistry.get('DocumentScanner') as Spec | null;
+export default TurboModuleRegistry.get<Spec>('DocumentScanner');
 
