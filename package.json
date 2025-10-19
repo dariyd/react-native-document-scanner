@@ -1,13 +1,20 @@
 {
   "name": "react-native-document-scanner",
   "title": "React Native Document Scanner",
-  "version": "1.0.1",
-  "description": "TODO",
+  "version": "2.0.0",
+  "description": "React Native document scanner using VisionKit (iOS) and ML Kit (Android) with support for both old and new architecture",
   "main": "index.js",
+  "types": "index.d.ts",
   "files": [
     "README.md",
+    "CHANGELOG.md",
+    "MIGRATION.md",
+    "GOOGLE_PLAY_REQUIREMENTS.md",
+    "RN_078_UPDATE.md",
     "android",
     "index.js",
+    "index.d.ts",
+    "src",
     "ios",
     "react-native-document-scanner.podspec"
   ],
@@ -20,7 +27,14 @@
     "baseUrl": "https://github.com/dariyd/react-native-document-scanner"
   },
   "keywords": [
-    "react-native"
+    "react-native",
+    "document-scanner",
+    "visionkit",
+    "mlkit",
+    "ios",
+    "android",
+    "fabric",
+    "turbomodules"
   ],
   "author": {
     "name": "Your Name",
@@ -30,11 +44,19 @@
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
   "peerDependencies": {
-    "react": ">=16.8.1",
-    "react-native": ">=0.60.0-rc.0 <1.0.x"
+    "react": ">=18.2.0",
+    "react-native": ">=0.78.0"
   },
   "devDependencies": {
-    "react": "^16.9.0",
-    "react-native": "^0.61.5"
+    "react": "^18.3.1",
+    "react-native": "^0.78.0"
+  },
+  "codegenConfig": {
+    "name": "RNDocumentScannerSpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.reactlibrary"
+    }
   }
 }

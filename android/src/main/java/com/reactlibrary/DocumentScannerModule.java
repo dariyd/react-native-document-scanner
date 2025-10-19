@@ -2,28 +2,253 @@
 
 package com.reactlibrary;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.util.Base64;
+import android.util.Log;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
+
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseActivityEventListener;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
+
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanner;
+import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions;
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanning;
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.UUID;
 
 public class DocumentScannerModule extends ReactContextBaseJavaModule {
 
+    public static final String NAME = "DocumentScanner";
+    private static final String TAG = "DocumentScannerModule";
+    private static final int DOCUMENT_SCAN_REQUEST = 1001;
+    
     private final ReactApplicationContext reactContext;
+    private Callback scannerCallback;
+    private ReadableMap scannerOptions;
+
+    private final ActivityEventListener activityEventListener = new BaseActivityEventListener() {
+        @Override
+        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+            if (requestCode == DOCUMENT_SCAN_REQUEST) {
+                handleScanResult(resultCode, data);
+            }
+        }
+    };
 
     public DocumentScannerModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+        reactContext.addActivityEventListener(activityEventListener);
     }
 
     @Override
     public String getName() {
-        return "DocumentScanner";
+        return NAME;
     }
 
     @ReactMethod
-    public void sampleMethod(String stringArgument, int numberArgument, Callback callback) {
-        // TODO: Implement some actually useful functionality
-        callback.invoke("Received numberArgument: " + numberArgument + " stringArgument: " + stringArgument);
+    public void launchScanner(ReadableMap options, Callback callback) {
+        Activity currentActivity = getCurrentActivity();
+        
+        if (currentActivity == null) {
+            WritableMap errorResponse = new WritableNativeMap();
+            errorResponse.putBoolean("error", true);
+            errorResponse.putString("errorMessage", "Activity doesn't exist");
+            callback.invoke(errorResponse);
+            return;
+        }
+
+        scannerCallback = callback;
+        scannerOptions = options;
+
+        // Configure the scanner
+        GmsDocumentScannerOptions.Builder optionsBuilder = new GmsDocumentScannerOptions.Builder()
+                .setGalleryImportAllowed(false)
+                .setPageLimit(10)
+                .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG, GmsDocumentScannerOptions.RESULT_FORMAT_PDF)
+                .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL);
+
+        GmsDocumentScannerOptions scannerOptions = optionsBuilder.build();
+        GmsDocumentScanner scanner = GmsDocumentScanning.getClient(scannerOptions);
+
+        scanner.getStartScanIntent(currentActivity)
+                .addOnSuccessListener(intentSender -> {
+                    try {
+                        currentActivity.startIntentSenderForResult(
+                                intentSender,
+                                DOCUMENT_SCAN_REQUEST,
+                                null,
+                                0,
+                                0,
+                                0
+                        );
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error starting scanner", e);
+                        WritableMap errorResponse = new WritableNativeMap();
+                        errorResponse.putBoolean("error", true);
+                        errorResponse.putString("errorMessage", e.getMessage());
+                        callback.invoke(errorResponse);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error getting scan intent", e);
+                    WritableMap errorResponse = new WritableNativeMap();
+                    errorResponse.putBoolean("error", true);
+                    errorResponse.putString("errorMessage", e.getMessage());
+                    callback.invoke(errorResponse);
+                });
+    }
+
+    private void handleScanResult(int resultCode, Intent data) {
+        if (scannerCallback == null) {
+            return;
+        }
+
+        if (resultCode == Activity.RESULT_CANCELED) {
+            WritableMap response = new WritableNativeMap();
+            response.putBoolean("didCancel", true);
+            scannerCallback.invoke(response);
+            scannerCallback = null;
+            return;
+        }
+
+        if (resultCode != Activity.RESULT_OK || data == null) {
+            WritableMap errorResponse = new WritableNativeMap();
+            errorResponse.putBoolean("error", true);
+            errorResponse.putString("errorMessage", "Scan failed");
+            scannerCallback.invoke(errorResponse);
+            scannerCallback = null;
+            return;
+        }
+
+        GmsDocumentScanningResult result = GmsDocumentScanningResult.fromActivityResultIntent(data);
+        if (result == null) {
+            WritableMap errorResponse = new WritableNativeMap();
+            errorResponse.putBoolean("error", true);
+            errorResponse.putString("errorMessage", "Failed to get scan result");
+            scannerCallback.invoke(errorResponse);
+            scannerCallback = null;
+            return;
+        }
+
+        WritableArray imagesArray = new WritableNativeArray();
+
+        // Process each scanned page
+        GmsDocumentScanningResult.Page[] pages = result.getPages().toArray(new GmsDocumentScanningResult.Page[0]);
+        for (GmsDocumentScanningResult.Page page : pages) {
+            Uri imageUri = page.getImageUri();
+            try {
+                WritableMap imageObject = processImage(imageUri);
+                if (imageObject != null) {
+                    imagesArray.pushMap(imageObject);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error processing image", e);
+            }
+        }
+
+        WritableMap response = new WritableNativeMap();
+        response.putArray("images", imagesArray);
+        scannerCallback.invoke(response);
+        scannerCallback = null;
+    }
+
+    private WritableMap processImage(Uri imageUri) throws IOException {
+        WritableMap imageObject = new WritableNativeMap();
+        
+        Activity currentActivity = getCurrentActivity();
+        if (currentActivity == null) {
+            return null;
+        }
+
+        // Read the image
+        InputStream inputStream = currentActivity.getContentResolver().openInputStream(imageUri);
+        if (inputStream == null) {
+            return null;
+        }
+
+        byte[] imageBytes = readBytes(inputStream);
+        inputStream.close();
+
+        // Decode bitmap to get dimensions
+        android.graphics.BitmapFactory.Options options = new android.graphics.BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+        
+        if (bitmap == null) {
+            return null;
+        }
+
+        // Apply quality compression if needed
+        double quality = 1.0;
+        if (scannerOptions != null && scannerOptions.hasKey("quality")) {
+            quality = scannerOptions.getDouble("quality");
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        int qualityPercent = (int) (quality * 100);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, qualityPercent, outputStream);
+        byte[] processedImageBytes = outputStream.toByteArray();
+        outputStream.close();
+
+        // Save to cache directory
+        String fileName = UUID.randomUUID().toString() + ".jpg";
+        File cacheDir = currentActivity.getCacheDir();
+        File imageFile = new File(cacheDir, fileName);
+        
+        FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+        fileOutputStream.write(processedImageBytes);
+        fileOutputStream.close();
+
+        // Build response
+        imageObject.putString("uri", Uri.fromFile(imageFile).toString());
+        imageObject.putString("fileName", fileName);
+        imageObject.putString("type", "image/jpeg");
+        imageObject.putInt("width", bitmap.getWidth());
+        imageObject.putInt("height", bitmap.getHeight());
+        imageObject.putInt("fileSize", processedImageBytes.length);
+
+        // Add base64 if requested
+        if (scannerOptions != null && scannerOptions.hasKey("includeBase64") && 
+            scannerOptions.getBoolean("includeBase64")) {
+            String base64 = Base64.encodeToString(processedImageBytes, Base64.NO_WRAP);
+            imageObject.putString("base64", base64);
+        }
+
+        bitmap.recycle();
+        
+        return imageObject;
+    }
+
+    private byte[] readBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        byte[] buffer = new byte[16384];
+        int len;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 }

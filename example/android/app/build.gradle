@@ -127,6 +127,7 @@ def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitect
 
 android {
     ndkVersion rootProject.ext.ndkVersion
+    namespace "com.documentscan"
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
