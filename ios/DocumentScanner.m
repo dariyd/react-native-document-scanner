@@ -5,6 +5,10 @@
 #import "VisionKit/VNDocumentCameraViewController.h"
 #import <React/RCTUtils.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <RNDocumentScannerSpec/RNDocumentScannerSpec.h>
+#endif
+
 @interface DocumentScanner ()
 
 @property (nonatomic, strong) RCTResponseSenderBlock callback;
@@ -18,6 +22,11 @@
 @implementation DocumentScanner
 
 RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
+{
+    return NO;
+}
 
 #ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
