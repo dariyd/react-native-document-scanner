@@ -3,6 +3,7 @@
 #import "DocumentScanner.h"
 #import "VisionKit/VisionKit.h"
 #import "VisionKit/VNDocumentCameraViewController.h"
+#import <React/RCTUtils.h>
 
 @interface DocumentScanner ()
 
@@ -37,7 +38,9 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 //            [root presentViewController:scanner animated:YES completion:nil];
 //        });
     
-    [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:scanner animated:YES completion:nil];
+    [RCTPresentedViewController() presentViewController:scanner animated:YES completion:nil];
+    // this is used when rootViewController is set in AppDelegate
+//     [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:scanner animated:YES completion:nil];
     
 }
 @end
@@ -147,4 +150,3 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 }
 
 @end
-
