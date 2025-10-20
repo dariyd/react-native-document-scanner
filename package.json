@@ -55,5 +55,8 @@
     "android": {
       "javaPackageName": "com.reactlibrary"
     }
+  },
+  "dependencies": {
+    "react-native-document-scanner": "https://github.com/dariyd/react-native-document-scanner.git"
   }
 }

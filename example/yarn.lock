@@ -5406,8 +5406,8 @@ react-is@^19.1.0:
   integrity sha512-x3Ax3kNSMIIkyVYhWPyO09bu0uttcAIoecO/um/rKGQ4EltYWVYtyiGkS/3xMynrbVQdS69Jhlv8FXUEZehlzA==
 
 "react-native-document-scanner@https://github.com/dariyd/react-native-document-scanner.git":
-  version "2.0.6"
-  resolved "https://github.com/dariyd/react-native-document-scanner.git#d6b63e59e68e5f8ddb62dd78b6b8aa3556667f88"
+  version "2.0.7"
+  resolved "https://github.com/dariyd/react-native-document-scanner.git#8437d367f9d8529a876ad1d585a56051774d8fbb"
 
 react-native@0.80.2:
   version "0.80.2"

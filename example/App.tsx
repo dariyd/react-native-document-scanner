@@ -10,8 +10,6 @@ import {
   Alert,
   Button,
   Image,
-  Platform,
-  PermissionsAndroid,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -35,40 +33,12 @@ function App() {
   const [images, setImages] = useState<ScannedImage[]>([]);
   const [status, setStatus] = useState<string>('');
 
-  const requestCameraPermission = async (): Promise<boolean> => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          {
-            title: 'Camera Permission',
-            message: 'This app needs camera access to scan documents',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        return false;
-      }
-    }
-    return true;
-  };
-
   const handleScan = async () => {
     try {
-      setStatus('Requesting permissions...');
-
-      const hasPermission = await requestCameraPermission();
-      if (!hasPermission) {
-        Alert.alert('Permission Denied', 'Camera permission is required');
-        setStatus('Permission denied');
-        return;
-      }
-
       setStatus('Launching scanner...');
+      
+      // ML Kit Document Scanner handles permissions internally on Android
+      // iOS VisionKit also handles its own permissions
       const result = await launchScanner({quality: 0.8});
 
       if (result.didCancel) {
