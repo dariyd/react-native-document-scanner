@@ -18,7 +18,7 @@ import {
   View,
   useColorScheme,
 } from 'react-native';
-import {launchScanner} from 'react-native-document-scanner';
+import {launchScanner} from '@dariyd/react-native-document-scanner';
 
 interface ScannedImage {
   uri: string;

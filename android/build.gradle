@@ -52,10 +52,15 @@ android {
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", (findProperty("newArchEnabled") ?: "false")
     }
+    
     lintOptions {
         abortOnError false
     }
 }
+
+// Configure React Native codegen
+// Note: Configuration is now in package.json's codegenConfig
+// and react-native.config.js (for Java-only TurboModule)
 
 repositories {
     // ref: https://www.baeldung.com/maven-local-repository

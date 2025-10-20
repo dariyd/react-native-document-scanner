@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@dariyd/react-native-document-scanner": "https://github.com/dariyd/react-native-document-scanner.git",
     "react": "19.1.0",
     "react-native": "0.80.2"
   },
