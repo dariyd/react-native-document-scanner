@@ -6,9 +6,6 @@ A React Native document scanner module for iOS and Android. Supports the new Rea
 - **Android**: Uses ML Kit Document Scanner API
 
 ## Preview
-
-Add your screenshots and videos here -->
-<!-- Example:
 ### iOS
 ![iOS Scanner](./assets/ios_demo.gif)
 
