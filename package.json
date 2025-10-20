@@ -1,7 +1,7 @@
 {
   "name": "@dariyd/react-native-document-scanner",
   "title": "React Native Document Scanner",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "React Native document scanner using VisionKit (iOS) and ML Kit (Android) with support for both old and new architecture",
   "main": "index.js",
   "types": "index.d.ts",

@@ -23,6 +23,8 @@ def safeExtGet(prop, fallback) {
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+// Needed so RN Gradle plugin can run codegen for this library when newArchEnabled=true in the app
+apply plugin: 'com.facebook.react'
 
 buildscript {
     // The Android Gradle plugin is only required when opening the android folder stand-alone.
@@ -58,9 +60,11 @@ android {
     }
 }
 
-// Configure React Native codegen
-// Note: Configuration is now in package.json's codegenConfig
-// and react-native.config.js (for Java-only TurboModule)
+// Configure React Native codegen for this library
+react {
+    libraryName = "RNDocumentScannerSpec"
+    codegenJavaPackageName = "com.docscanner"
+}
 
 repositories {
     // ref: https://www.baeldung.com/maven-local-repository
