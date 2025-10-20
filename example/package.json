@@ -11,8 +11,7 @@
   },
   "dependencies": {
     "react": "19.1.0",
-    "react-native": "0.80.2",
-    "react-native-document-scanner": "https://github.com/dariyd/react-native-document-scanner.git"
+    "react-native": "0.80.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
