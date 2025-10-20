@@ -75,10 +75,6 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
     implementation 'com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1'
-    
-    if (project.findProperty("newArchEnabled") == "true") {
-        implementation project(":ReactAndroid")
-    }
 }
 
 afterEvaluate { project ->
