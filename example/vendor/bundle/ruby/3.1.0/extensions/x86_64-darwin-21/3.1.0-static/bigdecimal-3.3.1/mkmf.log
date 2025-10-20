@@ -1,0 +1,355 @@
+have_builtin_func: checking for __builtin_clz()... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -o conftest -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe conftest.c  -L. -L/Users/dariy/.rubies/ruby-3.1.2/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib -L. -L/usr/local/opt/ruby@2.7/lib -fstack-protector-strong -L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib     -lruby.3.1-static -framework CoreFoundation -lpthread -lgmp -ldl -lobjc   "
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int foo;
+4: int main() { __builtin_clz(0); return 0; }
+/* end */
+
+--------------------
+
+have_builtin_func: checking for __builtin_clzl()... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int foo;
+4: int main() { __builtin_clzl(0); return 0; }
+/* end */
+
+--------------------
+
+have_builtin_func: checking for __builtin_clzll()... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int foo;
+4: int main() { __builtin_clzll(0); return 0; }
+/* end */
+
+--------------------
+
+have_header: checking for float.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <float.h>
+/* end */
+
+--------------------
+
+have_header: checking for math.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <math.h>
+/* end */
+
+--------------------
+
+have_header: checking for stdbool.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <stdbool.h>
+/* end */
+
+--------------------
+
+have_header: checking for stdlib.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <stdlib.h>
+/* end */
+
+--------------------
+
+have_header: checking for x86intrin.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <x86intrin.h>
+/* end */
+
+--------------------
+
+have_func: checking for _lzcnt_u32() in x86intrin.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -o conftest -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe conftest.c  -L. -L/Users/dariy/.rubies/ruby-3.1.2/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib -L. -L/usr/local/opt/ruby@2.7/lib -fstack-protector-strong -L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib     -lruby.3.1-static -framework CoreFoundation -lpthread -lgmp -ldl -lobjc   "
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <x86intrin.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))_lzcnt_u32; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for _lzcnt_u64() in x86intrin.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -o conftest -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe conftest.c  -L. -L/Users/dariy/.rubies/ruby-3.1.2/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib -L. -L/usr/local/opt/ruby@2.7/lib -fstack-protector-strong -L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib     -lruby.3.1-static -framework CoreFoundation -lpthread -lgmp -ldl -lobjc   "
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <x86intrin.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))_lzcnt_u64; return !p; }
+/* end */
+
+--------------------
+
+have_header: checking for intrin.h... -------------------- no
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+In file included from conftest.c:3:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include/intrin.h:12:15: fatal error: 'intrin.h' file not found
+   12 | #include_next <intrin.h>
+      |               ^~~~~~~~~~
+1 error generated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <intrin.h>
+/* end */
+
+--------------------
+
+have_header: checking for ruby/atomic.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <ruby/atomic.h>
+/* end */
+
+--------------------
+
+have_header: checking for ruby/internal/has/builtin.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <ruby/internal/has/builtin.h>
+/* end */
+
+--------------------
+
+have_header: checking for ruby/internal/static_assert.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <ruby/internal/static_assert.h>
+/* end */
+
+--------------------
+
+have_func: checking for rb_complex_real() in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -o conftest -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe conftest.c  -L. -L/Users/dariy/.rubies/ruby-3.1.2/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib -L. -L/usr/local/opt/ruby@2.7/lib -fstack-protector-strong -L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib     -lruby.3.1-static -framework CoreFoundation -lpthread -lgmp -ldl -lobjc   "
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_complex_real; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_complex_imag() in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -o conftest -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe conftest.c  -L. -L/Users/dariy/.rubies/ruby-3.1.2/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib -L. -L/usr/local/opt/ruby@2.7/lib -fstack-protector-strong -L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib     -lruby.3.1-static -framework CoreFoundation -lpthread -lgmp -ldl -lobjc   "
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_complex_imag; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_opts_exception_p() in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -o conftest -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe conftest.c  -L. -L/Users/dariy/.rubies/ruby-3.1.2/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib -L. -L/usr/local/opt/ruby@2.7/lib -fstack-protector-strong -L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib     -lruby.3.1-static -framework CoreFoundation -lpthread -lgmp -ldl -lobjc   "
+conftest.c:16:57: error: use of undeclared identifier 'rb_opts_exception_p'
+   16 | int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_opts_exception_p; return !p; }
+      |                                                         ^
+1 error generated.
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_opts_exception_p; return !p; }
+/* end */
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -o conftest -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe conftest.c  -L. -L/Users/dariy/.rubies/ruby-3.1.2/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib -L. -L/usr/local/opt/ruby@2.7/lib -fstack-protector-strong -L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib     -lruby.3.1-static -framework CoreFoundation -lpthread -lgmp -ldl -lobjc   "
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: extern void rb_opts_exception_p();
+17: int t(void) { rb_opts_exception_p(); return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_category_warn() in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -o conftest -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe conftest.c  -L. -L/Users/dariy/.rubies/ruby-3.1.2/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib -L. -L/usr/local/opt/ruby@2.7/lib -fstack-protector-strong -L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/readline/lib -L/usr/local/opt/libyaml/lib -L/usr/local/opt/gdbm/lib     -lruby.3.1-static -framework CoreFoundation -lpthread -lgmp -ldl -lobjc   "
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_category_warn; return !p; }
+/* end */
+
+--------------------
+
+have_const: checking for RB_WARN_CATEGORY_DEPRECATED in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/dariy/.rubies/ruby-3.1.2/lib "clang -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/x86_64-darwin21 -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0/ruby/backward -I/Users/dariy/.rubies/ruby-3.1.2/include/ruby-3.1.0 -I. -I/usr/local/opt/ruby@2.7/include -I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/readline/include -I/usr/local/opt/libyaml/include -I/usr/local/opt/gdbm/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdivision-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wextra-tokens -Wundef  -pipe   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <ruby.h>
+4: 
+5: /*top*/
+6: typedef int conftest_type;
+7: conftest_type conftestval = (int)RB_WARN_CATEGORY_DEPRECATED;
+/* end */
+
+--------------------
+

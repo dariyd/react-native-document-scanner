@@ -1,0 +1,36 @@
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/bigdecimal-3.3.1/ext/bigdecimal
+/Users/dariy/.rubies/ruby-3.1.2/bin/ruby -I /Users/dariy/.rubies/ruby-3.1.2/lib/ruby/site_ruby/3.1.0 extconf.rb
+checking for __builtin_clz()... yes
+checking for __builtin_clzl()... yes
+checking for __builtin_clzll()... yes
+checking for float.h... yes
+checking for math.h... yes
+checking for stdbool.h... yes
+checking for stdlib.h... yes
+checking for x86intrin.h... yes
+checking for _lzcnt_u32() in x86intrin.h... yes
+checking for _lzcnt_u64() in x86intrin.h... yes
+checking for intrin.h... no
+checking for ruby/atomic.h... yes
+checking for ruby/internal/has/builtin.h... yes
+checking for ruby/internal/static_assert.h... yes
+checking for rb_complex_real() in ruby.h... yes
+checking for rb_complex_imag() in ruby.h... yes
+checking for rb_opts_exception_p() in ruby.h... yes
+checking for rb_category_warn() in ruby.h... yes
+checking for RB_WARN_CATEGORY_DEPRECATED in ruby.h... yes
+creating Makefile
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/bigdecimal-3.3.1/ext/bigdecimal
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-rvuvzq sitelibdir\=./.gem.20251019-70093-rvuvzq clean
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/bigdecimal-3.3.1/ext/bigdecimal
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-rvuvzq sitelibdir\=./.gem.20251019-70093-rvuvzq
+compiling bigdecimal.c
+compiling missing.c
+linking shared-object bigdecimal.bundle
+ld: warning: -multiply_defined is obsolete
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/bigdecimal-3.3.1/ext/bigdecimal
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-rvuvzq sitelibdir\=./.gem.20251019-70093-rvuvzq install
+/usr/bin/install -c -m 0755 bigdecimal.bundle ./.gem.20251019-70093-rvuvzq

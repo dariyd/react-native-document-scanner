@@ -1,0 +1,97 @@
+{
+  "name": "React-RCTFBReactNativeSpec",
+  "version": "0.80.2",
+  "summary": "FBReactNativeSpec for React Native.",
+  "homepage": "https://reactnative.dev/",
+  "license": "MIT",
+  "authors": "Meta Platforms, Inc. and its affiliates",
+  "platforms": {
+    "ios": "15.1"
+  },
+  "source": {
+    "git": "https://github.com/facebook/react-native.git",
+    "tag": "v0.80.2"
+  },
+  "source_files": "FBReactNativeSpec/**/*.{c,h,m,mm,S,cpp}",
+  "compiler_flags": "-DRCT_NEW_ARCH_ENABLED=1",
+  "header_dir": "FBReactNativeSpec",
+  "module_name": "FBReactNativeSpec",
+  "pod_target_xcconfig": {
+    "OTHER_CFLAGS": "$(inherited)  -DRCT_NEW_ARCH_ENABLED=1",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
+    "HEADER_SEARCH_PATHS": [
+      "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\"",
+      "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
+      "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\"",
+      "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/bridging\"",
+      "$(PODS_ROOT)/glog",
+      "$(PODS_ROOT)/boost",
+      "$(PODS_ROOT)/DoubleConversion",
+      "$(PODS_ROOT)/fast_float/include",
+      "$(PODS_ROOT)/fmt/include",
+      "$(PODS_ROOT)/SocketRocket",
+      "$(PODS_ROOT)/RCT-Folly"
+    ]
+  },
+  "dependencies": {
+    "React-jsi": [
+
+    ],
+    "React-jsiexecutor": [
+
+    ],
+    "RCTRequired": [
+
+    ],
+    "RCTTypeSafety": [
+
+    ],
+    "React-Core": [
+
+    ],
+    "React-NativeModulesApple": [
+
+    ],
+    "ReactCommon": [
+
+    ],
+    "hermes-engine": [
+
+    ],
+    "React-hermes": [
+
+    ],
+    "glog": [
+
+    ],
+    "boost": [
+
+    ],
+    "DoubleConversion": [
+
+    ],
+    "fast_float": [
+
+    ],
+    "fmt": [
+
+    ],
+    "RCT-Folly": [
+
+    ],
+    "SocketRocket": [
+
+    ],
+    "RCT-Folly/Fabric": [
+
+    ]
+  },
+  "script_phases": [
+    {
+      "name": "[RN]Check FBReactNativeSpec",
+      "execution_position": "before_compile",
+      "always_out_of_date": "1",
+      "script": "echo \"Checking whether Codegen has run...\"\nfbReactNativeSpecPath=\"$REACT_NATIVE_PATH/React/FBReactNativeSpec\"\n\nif [[ ! -d \"$fbReactNativeSpecPath\" ]]; then\n  echo 'error: Codegen did not run properly in your project. Please reinstall cocoapods with `bundle exec pod install`.'\n  exit 1\nfi\n"
+    }
+  ]
+}

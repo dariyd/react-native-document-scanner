@@ -1,0 +1,116 @@
+{
+  "name": "react-native-document-scanner",
+  "version": "2.0.6",
+  "summary": "React Native document scanner using VisionKit (iOS) and ML Kit (Android) with support for both old and new architecture",
+  "description": "React Native document scanner using VisionKit (iOS) and ML Kit (Android) with support for both old and new architecture",
+  "homepage": "https://github.com/dariyd/react-native-document-scanner",
+  "license": "MIT",
+  "authors": {
+    "Dariy": "dariy@email.com"
+  },
+  "platforms": {
+    "ios": "13.0"
+  },
+  "source": {
+    "git": "https://github.com/dariyd/react-native-document-scanner.git",
+    "tag": "2.0.6"
+  },
+  "source_files": "ios/**/*.{h,c,cc,cpp,m,mm,swift}",
+  "requires_arc": true,
+  "frameworks": [
+    "VisionKit"
+  ],
+  "compiler_flags": "-DRCT_NEW_ARCH_ENABLED=1",
+  "dependencies": {
+    "React-Core": [
+
+    ],
+    "React-RCTFabric": [
+
+    ],
+    "ReactCodegen": [
+
+    ],
+    "RCTRequired": [
+
+    ],
+    "RCTTypeSafety": [
+
+    ],
+    "ReactCommon/turbomodule/bridging": [
+
+    ],
+    "ReactCommon/turbomodule/core": [
+
+    ],
+    "React-NativeModulesApple": [
+
+    ],
+    "Yoga": [
+
+    ],
+    "React-Fabric": [
+
+    ],
+    "React-graphics": [
+
+    ],
+    "React-utils": [
+
+    ],
+    "React-featureflags": [
+
+    ],
+    "React-debug": [
+
+    ],
+    "React-ImageManager": [
+
+    ],
+    "React-rendererdebug": [
+
+    ],
+    "React-jsi": [
+
+    ],
+    "React-renderercss": [
+
+    ],
+    "hermes-engine": [
+
+    ],
+    "React-hermes": [
+
+    ],
+    "glog": [
+
+    ],
+    "boost": [
+
+    ],
+    "DoubleConversion": [
+
+    ],
+    "fast_float": [
+
+    ],
+    "fmt": [
+
+    ],
+    "RCT-Folly": [
+
+    ],
+    "SocketRocket": [
+
+    ],
+    "RCT-Folly/Fabric": [
+
+    ]
+  },
+  "pod_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
+    "OTHER_CPLUSPLUSFLAGS": "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ",
+    "OTHER_SWIFT_FLAGS": "$(inherited) -DRCT_NEW_ARCH_ENABLED"
+  }
+}

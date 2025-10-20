@@ -1,0 +1,23 @@
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/json-2.15.1/ext/json/ext/parser
+/Users/dariy/.rubies/ruby-3.1.2/bin/ruby -I /Users/dariy/.rubies/ruby-3.1.2/lib/ruby/site_ruby/3.1.0 extconf.rb
+checking for rb_enc_interned_str() in ruby/encoding.h... yes
+checking for rb_hash_new_capa() in ruby.h... no
+checking for rb_hash_bulk_insert() in ruby.h... yes
+checking for strnlen() in string.h... yes
+checking for whether -std=c99 is accepted as CFLAGS... yes
+checking for x86intrin.h... yes
+checking for cpuid.h... yes
+creating Makefile
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/json-2.15.1/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-dsmzmu sitelibdir\=./.gem.20251019-70093-dsmzmu clean
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/json-2.15.1/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-dsmzmu sitelibdir\=./.gem.20251019-70093-dsmzmu
+compiling parser.c
+linking shared-object json/ext/parser.bundle
+ld: warning: -multiply_defined is obsolete
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/json-2.15.1/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-dsmzmu sitelibdir\=./.gem.20251019-70093-dsmzmu install
+/usr/bin/install -c -m 0755 parser.bundle ./.gem.20251019-70093-dsmzmu/json/ext

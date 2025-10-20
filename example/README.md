@@ -1,307 +1,97 @@
-# Document Scanner Example App
+This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-This is an example React Native app demonstrating the usage of `react-native-document-scanner` on both iOS and Android.
+# Getting Started
 
-## Features Demonstrated
+> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 
-- Basic document scanning
-- Multi-page document scanning
-- Image quality settings
-- Displaying scanned images
-- Error and cancellation handling
+## Step 1: Start Metro
 
-## Prerequisites
+First, you will need to run **Metro**, the JavaScript build tool for React Native.
 
-### iOS
-- Xcode 12.0 or later
-- CocoaPods installed
-- iOS 13.0+ device or simulator
-- macOS for development
+To start the Metro dev server, run the following command from the root of your React Native project:
 
-### Android
-- Android Studio
-- Android SDK (API level 35 recommended)
-- Java Development Kit (JDK) 11 or later
-- Android device or emulator with API level 21+
-- Google Play Services (for ML Kit)
-- Build Tools 35.0.0
+```sh
+# Using npm
+npm start
 
-## Installation
-
-### Quick Start
-
-#### Option 1: Automated Setup (Recommended)
-
-```bash
-cd example
-./setup.sh
-```
-
-This script will:
-- ✅ Install Node dependencies
-- ✅ Setup iOS (if on macOS)
-- ✅ Setup Android
-- ✅ Verify configuration
-
-#### Option 2: Manual Setup
-
-```bash
-cd example
-yarn install
-# This automatically runs 'pod install' for iOS
-```
-
-### Platform-Specific Guides
-
-- 🤖 **Android**: See [ANDROID_BUILD_QUICK_START.md](./ANDROID_BUILD_QUICK_START.md) for quick Android build guide
-- 📱 **iOS & Android**: See [BUILD.md](./BUILD.md) for comprehensive build instructions
-
-### Quick Commands
-
-```bash
-# Install dependencies
-yarn install
-
-# Run on Android
-yarn android
-
-# Run on iOS
-yarn ios
-
-# Start Metro bundler
+# OR using Yarn
 yarn start
 ```
 
-## Running the App
+## Step 2: Build and run your app
 
-### iOS
-
-```bash
-yarn ios
-```
+With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
 
 ### Android
 
-```bash
+```sh
+# Using npm
+npm run android
+
+# OR using Yarn
 yarn android
 ```
 
-### Full Build Guide
+### iOS
 
-See **[BUILD.md](./BUILD.md)** for:
-- ✅ Complete build instructions
-- ✅ Platform-specific setup
-- ✅ Troubleshooting common issues
-- ✅ Performance tips
-- ✅ Production builds
-- ✅ Debugging tips
+For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
 
-## Testing New Architecture
+The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
 
-### Enable New Architecture on iOS
-
-1. Open `ios/Podfile`
-2. Add or uncomment:
-```ruby
-ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+```sh
+bundle install
 ```
-3. Run:
-```bash
-cd ios
-pod install
-cd ..
+
+Then, and every time you update your native dependencies, run:
+
+```sh
+bundle exec pod install
+```
+
+For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+
+```sh
+# Using npm
+npm run ios
+
+# OR using Yarn
 yarn ios
 ```
 
-### Enable New Architecture on Android
+If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
 
-1. Open `android/gradle.properties`
-2. Add or set:
-```properties
-newArchEnabled=true
-```
-3. Run:
-```bash
-yarn android
-```
+This is one way to run your app — you can also build it directly from Android Studio or Xcode.
 
-## Usage
+## Step 3: Modify your app
 
-1. Launch the app
-2. Tap the "START SCAN" button
-3. Point your camera at a document
-4. The scanner will automatically detect document edges
-5. Follow on-screen instructions to capture
-6. For multi-page documents, tap "+" to add more pages
-7. Tap "Save" when done
-8. Scanned images will appear at the bottom of the screen
+Now that you have successfully run the app, let's make changes!
 
-## Code Overview
+Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
 
-### Main App Component
+When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
 
-```javascript
-import { launchScanner } from 'react-native-document-scanner';
+- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
+- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
 
-const App = () => {
-  const [images, setImages] = useState([]);
+## Congratulations! :tada:
 
-  const startScan = async () => {
-    const results = await launchScanner({ quality: 0.8 });
-    if (results?.images?.length) {
-      setImages(results.images);
-    }
-  };
+You've successfully run and modified your React Native App. :partying_face:
 
-  return (
-    <View>
-      <Button title="START SCAN" onPress={startScan} />
-      {images.map(image => (
-        <Image key={image.fileName} source={{ uri: image.uri }} />
-      ))}
-    </View>
-  );
-};
-```
+### Now what?
 
-## Platform-Specific Notes
+- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
+- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
 
-### iOS
-- Requires camera permission in Info.plist (already configured)
-- Uses VisionKit framework
-- Supports both PNG and JPEG output based on quality setting
+# Troubleshooting
 
-### Android
-- Requires camera permission in AndroidManifest.xml (already configured)
-- Uses Google ML Kit Document Scanner
-- Requires Google Play Services
-- Always outputs JPEG format
+If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
-## Troubleshooting
+# Learn More
 
-### iOS Issues
+To learn more about React Native, take a look at the following resources:
 
-**Error: "Camera permission denied"**
-- Solution: Check that `NSCameraUsageDescription` is in `ios/DocumentScan/Info.plist`
-
-**Error: "Module not found"**
-- Solution: Run `cd ios && pod install && cd ..`
-
-### Android Issues
-
-**Error: "Incompatible Java and Gradle" or "Cannot sync the project"**
-- Solution: The example uses Gradle 8.5 which is compatible with Java 21
-- If your Android Studio uses a different Java version, you have two options:
-  1. Update Android Studio to use Java 21 (in Preferences > Build, Execution, Deployment > Build Tools > Gradle > Gradle JDK)
-  2. Or change Gradle version in `android/gradle/wrapper/gradle-wrapper.properties`:
-     - For Java 17: Use `gradle-7.6-all.zip`
-     - For Java 11: Use `gradle-7.3-all.zip`
-
-**Error: "ML Kit not available"**
-- Solution: Ensure Google Play Services is installed on your device/emulator
-- For emulators: Use an image with Google Play Services (not AOSP)
-
-**Error: "CAMERA permission not granted"**
-- Solution: Check `android/app/src/main/AndroidManifest.xml` has camera permission
-- Manually grant permission in device settings if needed
-
-**Build Error**
-- Solution: Clean and rebuild
-```bash
-cd android
-./gradlew clean
-cd ..
-yarn android
-```
-
-### General Issues
-
-**Metro bundler cache issues**
-```bash
-yarn start --reset-cache
-```
-
-**Node modules issues**
-```bash
-rm -rf node_modules
-yarn install
-```
-
-## Modifying the Example
-
-### Change Image Quality
-
-Edit `App.js`:
-```javascript
-const results = await launchScanner({ 
-  quality: 0.5  // Range: 0.0 to 1.0
-});
-```
-
-### Enable Base64 Output
-
-Edit `App.js`:
-```javascript
-const results = await launchScanner({ 
-  quality: 0.8,
-  includeBase64: true  // Adds base64 string to result
-});
-```
-
-### Access Scanned Data
-
-```javascript
-const results = await launchScanner();
-
-if (results.didCancel) {
-  console.log('User cancelled');
-} else if (results.error) {
-  console.log('Error:', results.errorMessage);
-} else if (results.images) {
-  results.images.forEach(image => {
-    console.log('URI:', image.uri);
-    console.log('Size:', image.fileSize);
-    console.log('Dimensions:', image.width, 'x', image.height);
-    console.log('Type:', image.type);
-    console.log('Filename:', image.fileName);
-    if (image.base64) {
-      console.log('Base64:', image.base64.substring(0, 50) + '...');
-    }
-  });
-}
-```
-
-## Project Structure
-
-```
-example/
-├── android/          # Android native project
-├── ios/              # iOS native project
-├── App.js            # Main app component
-├── index.js          # Entry point
-├── package.json      # Dependencies
-└── README.md         # This file
-```
-
-## React Native Version
-
-This example is built with **React Native 0.78.0** and **React 18.3.1**. The `react-native-document-scanner` module requires React Native 0.78.0 or higher for production use (to support stable new architecture features).
-
-## Additional Resources
-
-- [Main README](../README.md) - Full module documentation
-- [Migration Guide](../MIGRATION.md) - Upgrade instructions
-- [Changelog](../CHANGELOG.md) - Version history
-
-## Support
-
-If you encounter issues:
-1. Check this README's troubleshooting section
-2. Review the main [README](../README.md)
-3. Check [existing issues](https://github.com/dariyd/react-native-document-scanner/issues)
-4. Create a new issue with details about your problem
-
-## License
-
-MIT
-
+- [React Native Website](https://reactnative.dev) - learn more about React Native.
+- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
+- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
+- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
+- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.

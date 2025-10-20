@@ -1,0 +1,16 @@
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/nkf-0.2.0/ext/nkf
+/Users/dariy/.rubies/ruby-3.1.2/bin/ruby -I /Users/dariy/.rubies/ruby-3.1.2/lib/ruby/site_ruby/3.1.0 extconf.rb
+creating Makefile
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-xjnvvz sitelibdir\=./.gem.20251019-70093-xjnvvz clean
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-xjnvvz sitelibdir\=./.gem.20251019-70093-xjnvvz
+compiling nkf.c
+linking shared-object nkf.bundle
+ld: warning: -multiply_defined is obsolete
+
+current directory: /Users/dariy/Job/forked/react-native-document-scanner/example/TestDocScan/vendor/bundle/ruby/3.1.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20251019-70093-xjnvvz sitelibdir\=./.gem.20251019-70093-xjnvvz install
+/usr/bin/install -c -m 0755 nkf.bundle ./.gem.20251019-70093-xjnvvz
