@@ -1,4 +1,4 @@
-// DocumentScanner.m
+// DocumentScanner.mm
 
 #import "DocumentScanner.h"
 #import "VisionKit/VisionKit.h"
@@ -70,15 +70,8 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     
     VNDocumentCameraViewController * scanner = [[VNDocumentCameraViewController alloc] init];
     scanner.delegate = self;
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//            UIViewController *root = RCTPresentedViewController();
-//            [root presentViewController:scanner animated:YES completion:nil];
-//        });
     
     [RCTPresentedViewController() presentViewController:scanner animated:YES completion:nil];
-    // this is used when rootViewController is set in AppDelegate
-//     [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:scanner animated:YES completion:nil];
-    
 }
 @end
 
@@ -112,7 +105,6 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 }
 
 -(NSMutableDictionary *)mapImageToAsset:(UIImage *)image {
-//    NSString *fileType = [DocumentScanner getFileType:UIImagePNGRepresentation(image)];
     NSString *fileType = self.options[@"quality"] != nil && [self.options[@"quality"] floatValue] < 1.0 ? @"jpg" : @"png";
     NSData *data = nil;
 
@@ -150,40 +142,39 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     return asset;
 }
 
-
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [picker dismissViewControllerAnimated:YES completion:^{
-            self.callback(@[@{@"didCancel": @YES}]);
+            self.callback(@[@{ @"didCancel": @YES }]);
         }];
     });
 }
 
 - (void)documentCameraViewController:(VNDocumentCameraViewController *)controller didFinishWithScan:(VNDocumentCameraScan *)scan{
     NSMutableArray *scannedImages = [NSMutableArray array];
-    int i;
-    for (i = 0; i < [scan pageCount]; i++) {
+    for (int i = 0; i < [scan pageCount]; i++) {
         UIImage *image =  [scan imageOfPageAtIndex:i];
         [scannedImages addObject:[self mapImageToAsset:image]];
     }
     
     [controller dismissViewControllerAnimated:true completion:^{
-        self.callback(@[@{@"images": scannedImages}]);
+        self.callback(@[@{ @"images": scannedImages }]);
     }];
 }
 
 - (void)documentCameraViewControllerDidCancel:(VNDocumentCameraViewController *)controller {
     [controller dismissViewControllerAnimated:true completion:^{
-        self.callback(@[@{@"didCancel": @YES}]);
+        self.callback(@[@{ @"didCancel": @YES }]);
     }];
 }
 
-- (void)documentCameraViewController:(VNDocumentCameraViewController *)controller
-                    didFailWithError:(NSError *)error {
+- (void)documentCameraViewController:(VNDocumentCameraViewController *)controller didFailWithError:(NSError *)error {
     [controller dismissViewControllerAnimated:true completion:^{
-        self.callback(@[@{@"error": @YES, @"errorMessage": error.localizedFailureReason}]);
+        self.callback(@[@{ @"error": @YES, @"errorMessage": error.localizedFailureReason }]);
     }];
 }
 
 @end
+
+
