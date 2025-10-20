@@ -1,0 +1,57 @@
+# Don't publish these files/folders to npm
+
+# Example app
+example/
+
+# Scripts
+scripts/
+
+# Documentation (already in files list if needed)
+PUBLISHING.md
+CODEGEN_EXPLAINED.md
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+package-lock.json
+
+# Build artifacts
+build/
+dist/
+*.log
+
+# Tests (if you add them later)
+__tests__/
+__mocks__/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+coverage/
+
+# Misc
+.eslintrc*
+.prettierrc*
+tsconfig.json
+

@@ -13,10 +13,15 @@
     "index.d.ts",
     "src",
     "ios",
-    "react-native-document-scanner.podspec"
+    "react-native-document-scanner.podspec",
+    "react-native.config.js",
+    "assets"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "echo \"✅ Installing dependencies...\"",
+    "prepublishOnly": "echo \"📦 Preparing package for publishing...\" && npm pack --dry-run",
+    "postpublish": "echo \"🎉 Published successfully! Don't forget to: git push && git push --tags\""
   },
   "repository": {
     "type": "git",
@@ -34,8 +39,12 @@
     "turbomodules"
   ],
   "author": {
-    "name": "Your Name",
-    "email": "yourname@email.com"
+    "name": "Dariy",
+    "email": "dariy@example.com"
+  },
+  "homepage": "https://github.com/dariyd/react-native-document-scanner#readme",
+  "bugs": {
+    "url": "https://github.com/dariyd/react-native-document-scanner/issues"
   },
   "license": "MIT",
   "licenseFilename": "LICENSE",

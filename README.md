@@ -23,16 +23,30 @@ A React Native document scanner module for iOS and Android. Supports the new Rea
 - 📦 Optional base64 encoding
 - 🎯 Platform parity - same API for both platforms
 
-## Getting started
+## Installation
+
+### From npm (Recommended)
 
 ```bash
-yarn add https://github.com/dariyd/react-native-document-scanner.git
+npm install @dariyd/react-native-document-scanner
+```
+
+or with yarn:
+
+```bash
+yarn add @dariyd/react-native-document-scanner
+```
+
+### From GitHub (Latest Development)
+
+```bash
+npm install https://github.com/dariyd/react-native-document-scanner.git
 ```
 
 or
 
 ```bash
-npm install https://github.com/dariyd/react-native-document-scanner.git
+yarn add https://github.com/dariyd/react-native-document-scanner.git
 ```
 
 ### iOS Installation
