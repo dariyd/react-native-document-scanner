@@ -1007,8 +1007,8 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@dariyd/react-native-document-scanner@https://github.com/dariyd/react-native-document-scanner.git":
-  version "2.0.10"
-  resolved "https://github.com/dariyd/react-native-document-scanner.git#e1dbed57cd9a45a8a8ef7914b3c2cfa5919ce8ed"
+  version "2.0.12"
+  resolved "https://github.com/dariyd/react-native-document-scanner.git#c37a1d4ee362f41e3696d73f22ae53a9817c0694"
 
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
   version "4.9.0"
