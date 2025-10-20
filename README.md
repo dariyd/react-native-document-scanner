@@ -5,6 +5,17 @@ A React Native document scanner module for iOS and Android. Supports the new Rea
 - **iOS**: Uses VisionKit framework and VNDocumentCameraViewController
 - **Android**: Uses ML Kit Document Scanner API
 
+## Preview
+
+Add your screenshots and videos here -->
+<!-- Example:
+### iOS
+![iOS Scanner](./assets/ios_demo.gif)
+
+### Android
+![Android Scanner](./assets/android_demo.gif)
+
+
 ## Features
 
 - 📱 Cross-platform support (iOS 13+ and Android API 21+)
