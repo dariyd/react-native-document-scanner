@@ -1,10 +1,8 @@
 module.exports = {
   dependency: {
     platforms: {
-      android: {
-        // Java-only TurboModule, no C++ code
-        cmakeListsPath: null,
-      },
+      // Use default RN autolinking/codegen behavior on both platforms
+      android: {},
       ios: {},
     },
   },

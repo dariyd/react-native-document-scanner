@@ -1,6 +1,6 @@
 # react-native-document-scanner
 
-A React Native document scanner module for iOS and Android with support for both old and new React Native architecture (Fabric/TurboModules).
+A React Native document scanner module for iOS and Android. Supports the new React Native architecture (Fabric/TurboModules) on iOS.
 
 - **iOS**: Uses VisionKit framework and VNDocumentCameraViewController
 - **Android**: Uses ML Kit Document Scanner API
@@ -8,7 +8,7 @@ A React Native document scanner module for iOS and Android with support for both
 ## Features
 
 - 📱 Cross-platform support (iOS 13+ and Android API 21+)
-- 🚀 Support for both React Native architectures (old bridge and new Fabric/TurboModules)
+- 🚀 iOS: Full support for new React Native architecture (Fabric/TurboModules)
 - 📸 Automatic document detection and scanning
 - 🖼️ Multi-page document scanning
 - ⚙️ Configurable image quality
@@ -60,13 +60,15 @@ The module automatically requests camera permission when launching the scanner.
 
 ## React Native New Architecture
 
-This module requires **React Native 0.78.0 or higher** and supports both the old and new React Native architecture. No additional configuration is needed - the module automatically detects which architecture is being used.
+This module requires **React Native 0.77.3 or higher** and supports the new architecture on iOS, while using the stable old architecture on Android.
 
-**Why 0.78.0?** React Native 0.78 includes the most stable version of the new architecture (Fabric/TurboModules) with significant performance improvements and bug fixes.
+**iOS**: Full support for Fabric and TurboModules - automatically detected and enabled when you enable new architecture in your project.
+
+**Android**: Uses the stable bridge implementation for maximum compatibility. New architecture support is planned for a future release.
 
 ### Requirements
 
-- **React Native 0.78.0 or higher** (required for stable new architecture support)
+- **React Native 0.77.3 or higher**
 - **React 18.2.0 or higher**
 - iOS 13.0 or higher
 - **Android**:
@@ -76,13 +78,14 @@ This module requires **React Native 0.78.0 or higher** and supports both the old
 
 ### Enabling New Architecture
 
-You can enable the new architecture by setting the following in your project:
+**✅ iOS**: Fully supported - Set `RCT_NEW_ARCH_ENABLED=1` in your Podfile or build settings
 
-**iOS** - Set `RCT_NEW_ARCH_ENABLED=1` in your Podfile or build settings
+**⚠️ Android**: Currently uses old architecture only. New architecture support for Android is coming in a future release.
+  - The module is implemented as a Java-only TurboModule on Android, which requires additional C++ bridging setup
+  - Keep `newArchEnabled=false` in your `gradle.properties` for now
+  - The module works perfectly with the old architecture on Android
 
-**Android** - Set `newArchEnabled=true` in your `gradle.properties`
-
-The module will work seamlessly with either architecture.
+The iOS implementation will automatically use Fabric/TurboModules when enabled, while Android will continue to use the stable bridge implementation.
 
 
 ## Usage

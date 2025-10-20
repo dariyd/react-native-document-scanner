@@ -1,7 +1,7 @@
 <!-- AndroidManifest.xml -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.reactlibrary">
+          package="com.docscanner">
 
     <!-- Required for ML Kit Document Scanner -->
     <uses-permission android:name="android.permission.CAMERA" />
