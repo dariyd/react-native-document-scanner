@@ -9,6 +9,8 @@
 #import <RNDocumentScannerSpec/RNDocumentScannerSpec.h>
 #endif
 
+using namespace facebook::react;
+
 @interface DocumentScanner ()
 
 @property (nonatomic, strong) RCTResponseSenderBlock callback;
@@ -29,19 +31,37 @@ RCT_EXPORT_MODULE()
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-    (const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-    return std::make_shared<facebook::react::NativeDocumentScannerSpecJSI>(params);
+    return std::make_shared<NativeDocumentScannerSpecJSI>(params);
 }
-#endif
 
+// New architecture method (implements the protocol)
+- (void)launchScanner:(JS::NativeDocumentScanner::Options &)options
+             callback:(RCTResponseSenderBlock)callback
+{
+    // Convert C++ struct to NSDictionary
+    NSMutableDictionary *opts = [NSMutableDictionary new];
+    if (options.quality().has_value()) {
+        opts[@"quality"] = @(options.quality().value());
+    }
+    if (options.includeBase64().has_value()) {
+        opts[@"includeBase64"] = @(options.includeBase64().value());
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self launchDocScanner:opts callback:callback];
+    });
+}
+#else
+// Old architecture method
 RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSenderBlock)callback)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self launchDocScanner:options callback:callback];
     });
 }
+#endif
 
 - (void)launchDocScanner:(NSDictionary *)options callback:(RCTResponseSenderBlock)callback
 {
