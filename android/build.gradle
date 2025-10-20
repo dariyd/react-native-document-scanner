@@ -87,7 +87,15 @@ afterEvaluate { project ->
     task androidJavadoc(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
         classpath += files(android.bootClasspath)
-        classpath += files(project.getConfigurations().getByName('implementation').asList())
+        // Use a resolvable configuration when available; on some AGP setups
+        // (when this library is consumed from node_modules), a top-level
+        // 'compileClasspath' config may not exist. In that case, skip adding it.
+        def cc = project.configurations.findByName('compileClasspath')
+        if (cc != null) {
+            classpath += files(cc.asList())
+        } else {
+            logger.lifecycle("react-native-document-scanner: 'compileClasspath' not found; skipping extra Javadoc classpath setup.")
+        }
         include '**/*.java'
         
         // Suppress warnings for missing documentation
@@ -119,46 +127,51 @@ afterEvaluate { project ->
 def packageJson = new groovy.json.JsonSlurper().parseText(file('../package.json').text)
 
 afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                
-                groupId = 'com.reactlibrary'
-                artifactId = packageJson.name
-                version = packageJson.version
-                
-                artifact androidSourcesJar
-                artifact androidJavadocJar
-                
-                pom {
-                    name = packageJson.title
-                    description = packageJson.description
-                    url = packageJson.repository.baseUrl
+    // Only configure publishing if the Android components expose a 'release' variant
+    def releaseComponent = components.findByName("release")
+    if (releaseComponent != null) {
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    from releaseComponent
                     
-                    licenses {
-                        license {
-                            name = packageJson.license
-                            url = packageJson.repository.baseUrl + '/blob/master/' + packageJson.licenseFilename
-                            distribution = 'repo'
+                    groupId = 'com.reactlibrary'
+                    artifactId = packageJson.name
+                    version = packageJson.version
+                    
+                    artifact androidSourcesJar
+                    artifact androidJavadocJar
+                    
+                    pom {
+                        name = packageJson.title
+                        description = packageJson.description
+                        url = packageJson.repository.baseUrl
+                        
+                        licenses {
+                            license {
+                                name = packageJson.license
+                                url = packageJson.repository.baseUrl + '/blob/master/' + packageJson.licenseFilename
+                                distribution = 'repo'
+                            }
                         }
-                    }
-                    
-                    developers {
-                        developer {
-                            id = packageJson.author.name
-                            name = packageJson.author.name
+                        
+                        developers {
+                            developer {
+                                id = packageJson.author.name
+                                name = packageJson.author.name
+                            }
                         }
                     }
                 }
             }
-        }
-        
-        repositories {
-            maven {
-                // Deploy to react-native-document-scanner/android/maven, ready to publish to npm
-                url = uri("file://${projectDir}/../android/maven")
+            repositories {
+                maven {
+                    // Deploy to react-native-document-scanner/android/maven, ready to publish to npm
+                    url = uri("file://${projectDir}/../android/maven")
+                }
             }
         }
+    } else {
+        logger.lifecycle("react-native-document-scanner: Skipping maven-publish because no 'release' component is available (AGP too old or not applied).")
     }
 }
