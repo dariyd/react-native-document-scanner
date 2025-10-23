@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-document-scanner/ios/DocumentScanner.h
+../../../../../node_modules/@dariyd/react-native-document-scanner/ios/DocumentScanner.h

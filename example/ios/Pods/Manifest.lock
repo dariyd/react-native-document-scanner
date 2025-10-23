@@ -1648,7 +1648,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-document-scanner (2.0.6):
+  - react-native-document-scanner (2.0.13):
     - boost
     - DoubleConversion
     - fast_float
@@ -2196,7 +2196,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
-  - react-native-document-scanner (from `../node_modules/react-native-document-scanner`)
+  - "react-native-document-scanner (from `../node_modules/@dariyd/react-native-document-scanner`)"
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -2318,7 +2318,7 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-document-scanner:
-    :path: "../node_modules/react-native-document-scanner"
+    :path: "../node_modules/@dariyd/react-native-document-scanner"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -2425,7 +2425,7 @@ SPEC CHECKSUMS:
   React-logger: ea80169d826e0cd112fa4d68f58b2b3b968f1ecb
   React-Mapbuffer: a5d550d1add940ed2bc65b20dc1413407bf1a63f
   React-microtasksnativemodule: 5d00fefc19f0bc9a6432e5533683d6fc9c3da4e1
-  react-native-document-scanner: 497f060c419be293db08fdee35104b50e64aa24a
+  react-native-document-scanner: 742bfffc9cc6d5f82e835f716be013eda45aeb85
   React-NativeModulesApple: b22e6abb44d78270dfdfc7d85efe29e35e0333a7
   React-oscompat: 56d6de59f9ae95cd006a1c40be2cde83bc06a4e1
   React-perflogger: 0633844e495d8b34798c9bf0cb32ce315f1d5c9f

@@ -15868,7 +15868,7 @@
 				46EB2E0001B0D0 /* Support Files */,
 			);
 			name = "react-native-document-scanner";
-			path = "../../node_modules/react-native-document-scanner";
+			path = "../../node_modules/@dariyd/react-native-document-scanner";
 			sourceTree = "<group>";
 		};
 		46EB2E00001D20 /* Fabric */ = {
@@ -19748,7 +19748,7 @@
 				46EB2E0001B0F0 /* react-native-document-scanner.release.xcconfig */,
 			);
 			name = "Support Files";
-			path = "../../ios/Pods/Target Support Files/react-native-document-scanner";
+			path = "../../../ios/Pods/Target Support Files/react-native-document-scanner";
 			sourceTree = "<group>";
 		};
 		46EB2E0001B1B0 /* Pods-TestDocScan */ = {
