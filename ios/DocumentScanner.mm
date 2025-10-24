@@ -7,9 +7,8 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <RNDocumentScannerSpec/RNDocumentScannerSpec.h>
-#endif
-
 using namespace facebook::react;
+#endif
 
 @interface DocumentScanner ()
 
