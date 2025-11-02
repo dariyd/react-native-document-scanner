@@ -1,16 +1,17 @@
 # react-native-document-scanner
 
-A React Native document scanner module for iOS and Android. Supports the new React Native architecture (Fabric/TurboModules) on iOS.
+[![npm version](https://img.shields.io/npm/v/%40dariyd%2Freact-native-document-scanner.svg)](https://www.npmjs.com/package/@dariyd/react-native-document-scanner) [![license](https://img.shields.io/npm/l/%40dariyd%2Freact-native-document-scanner.svg)](./LICENSE)
+
+Fast, native React Native document scanner for iOS and Android using Apple VisionKit (iOS) and Google ML Kit (Android). Features automatic document detection, edge/perspective correction, multi‑page scanning, configurable image quality, optional Base64, and support for the React Native New Architecture (Fabric/TurboModules on iOS).
 
 - **iOS**: Uses VisionKit framework and VNDocumentCameraViewController
 - **Android**: Uses ML Kit Document Scanner API
 
 ## Preview
-### iOS
-![iOS Scanner](./assets/ios_demo.gif)
 
-### Android
-![Android Scanner](./assets/android_demo.gif)
+| iOS Demo | Android Demo |
+|----------|--------------|
+| ![iOS document scanner demo](./assets/ios_demo.gif) | ![Android document scanner demo](./assets/android_demo.gif) |
 
 
 ## Features
@@ -22,6 +23,8 @@ A React Native document scanner module for iOS and Android. Supports the new Rea
 - ⚙️ Configurable image quality
 - 📦 Optional base64 encoding
 - 🎯 Platform parity - same API for both platforms
+
+> Keywords: React Native document scanner, VisionKit document scanner, ML Kit document scanner, scan documents React Native, edge detection, perspective correction, multi‑page scanner
 
 ## Installation
 
