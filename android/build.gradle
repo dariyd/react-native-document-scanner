@@ -109,7 +109,8 @@ afterEvaluate { project ->
 
     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
         archiveClassifier.set('javadoc')
-        from androidJavadoc.destinationDir
+        def javadocOut = androidJavadoc.hasProperty('destinationDirectory') ? androidJavadoc.destinationDirectory : androidJavadoc.destinationDir
+        from javadocOut
     }
 
     task androidSourcesJar(type: Jar) {
