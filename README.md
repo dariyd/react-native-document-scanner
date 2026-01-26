@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/%40dariyd%2Freact-native-document-scanner.svg)](https://www.npmjs.com/package/@dariyd/react-native-document-scanner) [![license](https://img.shields.io/npm/l/%40dariyd%2Freact-native-document-scanner.svg)](./LICENSE)
 
-Fast, native React Native document scanner for iOS and Android using Apple VisionKit (iOS) and Google ML Kit (Android). Features automatic document detection, edge/perspective correction, multi‑page scanning, configurable image quality, optional Base64, and support for the React Native New Architecture (Fabric/TurboModules on iOS).
+Fast, native React Native document scanner for iOS and Android using Apple VisionKit (iOS) and Google ML Kit (Android). Features automatic document detection, edge/perspective correction, multi‑page scanning, configurable image quality, optional Base64, and support for the React Native New Architecture on ios and android.
 
 - **iOS**: Uses VisionKit framework and VNDocumentCameraViewController
 - **Android**: Uses ML Kit Document Scanner API
@@ -17,7 +17,7 @@ Fast, native React Native document scanner for iOS and Android using Apple Visio
 ## Features
 
 - 📱 Cross-platform support (iOS 13+ and Android API 21+)
-- 🚀 iOS: Full support for new React Native architecture (Fabric/TurboModules)
+- 🚀 iOS & Android: Full support for new React Native architecture (Fabric/TurboModules)
 - 📸 Automatic document detection and scanning
 - 🖼️ Multi-page document scanning
 - ⚙️ Configurable image quality
@@ -105,10 +105,7 @@ This module requires **React Native 0.77.3 or higher** and supports the new arch
 
 **✅ iOS**: Fully supported - Set `RCT_NEW_ARCH_ENABLED=1` in your Podfile or build settings
 
-**⚠️ Android**: Currently uses old architecture only. New architecture support for Android is coming in a future release.
-  - The module is implemented as a Java-only TurboModule on Android, which requires additional C++ bridging setup
-  - Keep `newArchEnabled=false` in your `gradle.properties` for now
-  - The module works perfectly with the old architecture on Android
+**✅ Android**:  Fully supported - Keep `newArchEnabled=true` in your `gradle.properties`
 
 The iOS implementation will automatically use Fabric/TurboModules when enabled, while Android will continue to use the stable bridge implementation.
 
