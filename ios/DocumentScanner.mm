@@ -170,7 +170,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 
 - (void)documentCameraViewController:(VNDocumentCameraViewController *)controller didFailWithError:(NSError *)error {
     [controller dismissViewControllerAnimated:true completion:^{
-        self.callback(@[@{ @"error": @YES, @"errorMessage": error.localizedFailureReason }]);
+        self.callback(@[@{ @"error": @YES, @"errorMessage": error.localizedFailureReason ?: error.localizedDescription }]);
     }];
 }
 
