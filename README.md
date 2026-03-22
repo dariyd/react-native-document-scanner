@@ -14,6 +14,12 @@ Fast, native React Native document scanner for iOS and Android using Apple Visio
 | ![iOS document scanner demo](./assets/ios_demo.gif) | ![Android document scanner demo](./assets/android_demo.gif) |
 
 
+## Used in Production Apps
+
+| [FileNest AI - Docs Organizer](https://apps.apple.com/us/app/filenest-ai-docs-organizer/id6756841050) | [MyGarage - CarDocs & History](https://apps.apple.com/us/app/mygarage-cardocs-history/id6757166595) |
+|:---:|:---:|
+| [![FileNest AI](./assets/FileNest%20AI.gif)](https://apps.apple.com/us/app/filenest-ai-docs-organizer/id6756841050) | [![MyGarage](./assets/MyGarage%20%7C%20CarDocs%20%26%20History.gif)](https://apps.apple.com/us/app/mygarage-cardocs-history/id6757166595) |
+
 ## Features
 
 - 📱 Cross-platform support (iOS 13+ and Android API 21+)
