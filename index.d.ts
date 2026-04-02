@@ -36,6 +36,12 @@ export interface ImageObject {
    * The file name
    */
   fileName: string;
+
+  /**
+   * EXIF metadata of the image (only if includeExif option is true)
+   * Contains timestamps, device info, dimensions, and optionally GPS data
+   */
+  exif?: Record<string, any>;
 }
 
 export interface ScanResult {
@@ -72,10 +78,30 @@ export interface ScanOptions {
   /**
    * If true, includes base64 string of the image in the result
    * Avoid using on large image files due to performance impact
-   * 
+   *
    * @default false
    */
   includeBase64?: boolean;
+
+  /**
+   * If true, includes EXIF metadata (timestamps, device info, dimensions) in the result
+   * EXIF data is also embedded in the saved image file
+   *
+   * @default false
+   */
+  includeExif?: boolean;
+
+  /**
+   * If true, includes GPS coordinates in the EXIF metadata
+   * Requires location permission (the package will request it automatically)
+   * If permission is denied, scanning still works but GPS fields are skipped
+   *
+   * iOS: Requires NSLocationWhenInUseUsageDescription in Info.plist
+   * Android: Requires ACCESS_FINE_LOCATION permission
+   *
+   * @default false
+   */
+  includeLocationExif?: boolean;
 }
 
 /**

@@ -21,6 +21,8 @@ export default DocumentScannerModule;
 const DEFAULT_OPTIONS = {
   quality: 1,
   includeBase64: false,
+  includeExif: false,
+  includeLocationExif: false,
 };
 
 export function launchScanner(options = {}, callback) {

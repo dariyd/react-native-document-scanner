@@ -130,6 +130,21 @@ const result = await launchScanner({
   includeBase64: false,
 });
 
+// With EXIF metadata
+const result = await launchScanner({
+  quality: 0.8,
+  includeExif: true,
+});
+console.log('EXIF:', result.images[0].exif);
+
+// With EXIF + GPS location
+const result = await launchScanner({
+  quality: 0.8,
+  includeExif: true,
+  includeLocationExif: true,
+});
+console.log('GPS:', result.images[0].exif?.GPSLatitude, result.images[0].exif?.GPSLongitude);
+
 // With callback (optional)
 launchScanner({ quality: 0.9 }, (result) => {
   if (result.didCancel) {
@@ -160,10 +175,12 @@ The `callback` will be called with a response object, refer to [The Response Obj
 
 ## Options
 
-| Option         | iOS | Android | Description                                                                                                                               |
-| -------------- | --- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| quality        | ✅  | ✅      | Number between 0 and 1 for image quality (default: 1). Lower values reduce file size                                                      |
-| includeBase64  | ✅  | ✅      | If true, creates base64 string of the image (Avoid using on large image files due to performance)                                         |                                                   |
+| Option              | iOS | Android | Description                                                                                                                               |
+| ------------------- | --- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| quality             | ✅  | ✅      | Number between 0 and 1 for image quality (default: 1). Lower values reduce file size                                                      |
+| includeBase64       | ✅  | ✅      | If true, creates base64 string of the image (Avoid using on large image files due to performance)                                         |
+| includeExif         | ✅  | ✅      | If true, embeds EXIF metadata (timestamps, device info, dimensions) in the image file and returns it in the response (default: false)      |
+| includeLocationExif | ✅  | ✅      | If true, also embeds GPS coordinates in EXIF. Requires location permission — see [Location Permission Setup](#location-permission-setup) (default: false) |
 
 ## The Response Object
 
@@ -185,6 +202,51 @@ The `callback` will be called with a response object, refer to [The Response Obj
 | fileSize  | ✅  | ✅      | The file size in bytes                             |
 | type      | ✅  | ✅      | The file MIME type (e.g., "image/jpeg")            |
 | fileName  | ✅  | ✅      | The file name                                      |
+| exif      | ✅  | ✅      | EXIF metadata object (if includeExif is true). See [EXIF Object](#exif-object) |
+
+## EXIF Object
+
+When `includeExif` is `true`, each image includes an `exif` object with the following fields:
+
+| key                  | iOS | Android | Description                                          |
+| -------------------- | --- | ------- | ---------------------------------------------------- |
+| DateTimeOriginal     | ✅  | ✅      | Scan timestamp (format: `yyyy:MM:dd HH:mm:ss`)      |
+| DateTimeDigitized    | ✅  | ✅      | Scan timestamp (format: `yyyy:MM:dd HH:mm:ss`)      |
+| PixelXDimension      | ✅  | ✅      | Image width in pixels                                |
+| PixelYDimension      | ✅  | ✅      | Image height in pixels                               |
+| ColorSpace           | ✅  | ✅      | Color space (1 = sRGB)                               |
+| Make                 | ✅  | ✅      | Device manufacturer                                  |
+| Model                | ✅  | ✅      | Device model                                         |
+| Software             | ✅  | ✅      | App name                                             |
+| GPSLatitude          | ✅  | ✅      | Latitude (only if `includeLocationExif` is true and permission granted)  |
+| GPSLongitude         | ✅  | ✅      | Longitude (only if `includeLocationExif` is true and permission granted) |
+| GPSAltitude          | ✅  | ✅      | Altitude in meters                                   |
+| GPSHorizontalAccuracy| ✅  | ✅      | GPS accuracy in meters                               |
+| GPSDateTimeUTC       | ✅  | ✅      | GPS fix timestamp in UTC                             |
+
+## Location Permission Setup
+
+When using `includeLocationExif: true`, the package automatically requests location permission. However, you must add the required permission keys to your app:
+
+### iOS
+
+Add to your `Info.plist`:
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Your location will be embedded in scanned documents for record-keeping.</string>
+```
+
+### Android
+
+No additional setup required. The package declares `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION` permissions in its own manifest, which will be merged automatically.
+
+### Permission Behavior
+
+- If permission has **not been requested before**, the system dialog will appear automatically
+- If permission was **already granted**, no dialog is shown — location is fetched immediately
+- If permission was **denied**, GPS fields are silently skipped and scanning proceeds normally
+- Location permission is **only requested when `includeLocationExif: true`** — it has no effect otherwise
 
 ## Platform Differences
 

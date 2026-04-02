@@ -6,4 +6,8 @@
     <!-- Required for ML Kit Document Scanner -->
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- Optional: Required only when includeLocationExif is true -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 </manifest>
