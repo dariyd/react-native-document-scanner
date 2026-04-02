@@ -9,6 +9,7 @@ export interface ImageObject {
   fileSize: number;
   type: string;
   fileName: string;
+  exif?: Record<string, any>;
 }
 
 export interface ScanResult {
@@ -21,6 +22,8 @@ export interface ScanResult {
 export interface Options {
   quality?: number;
   includeBase64?: boolean;
+  includeExif?: boolean;
+  includeLocationExif?: boolean;
 }
 
 export interface Spec extends TurboModule {

@@ -2,17 +2,20 @@
 
 package com.docscanner;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.IntentSenderRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
@@ -26,6 +29,11 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
+
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanner;
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions;
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning;
@@ -36,6 +44,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 
 // For New Architecture: extend the generated spec base class
@@ -47,10 +59,12 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
     public static final String NAME = "DocumentScanner";
     private static final String TAG = "DocumentScannerModule";
     private static final int DOCUMENT_SCAN_REQUEST = 1001;
-    
+    private static final int LOCATION_PERMISSION_REQUEST = 1002;
+
     private final ReactApplicationContext reactContext;
     private Callback scannerCallback;
     private ReadableMap scannerOptions;
+    private Location currentLocation;
 
     private final ActivityEventListener activityEventListener = new BaseActivityEventListener() {
         @Override
@@ -76,7 +90,7 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
     @Override
     public void launchScanner(ReadableMap options, Callback callback) {
         Activity currentActivity = getCurrentActivity();
-        
+
         if (currentActivity == null) {
             WritableMap errorResponse = new WritableNativeMap();
             errorResponse.putBoolean("error", true);
@@ -87,7 +101,53 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
 
         scannerCallback = callback;
         scannerOptions = options;
+        currentLocation = null;
 
+        boolean includeLocationExif = options.hasKey("includeLocationExif") && options.getBoolean("includeLocationExif");
+
+        if (includeLocationExif) {
+            fetchLocationThenScan(currentActivity);
+        } else {
+            startScanner(currentActivity);
+        }
+    }
+
+    private void fetchLocationThenScan(Activity activity) {
+        // Check permission
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Request permission
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST);
+            // We can't wait for the permission result in a clean way from a library module,
+            // so we proceed without location if permission is not already granted.
+            // The permission dialog will show, and next time the user scans, it will be available.
+            startScanner(activity);
+            return;
+        }
+
+        // Permission already granted — fetch location
+        try {
+            FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(activity);
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+            locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
+                    .addOnSuccessListener(location -> {
+                        currentLocation = location;
+                        startScanner(activity);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Failed to get location, proceeding without GPS", e);
+                        startScanner(activity);
+                    });
+        } catch (SecurityException e) {
+            Log.w(TAG, "Location permission denied", e);
+            startScanner(activity);
+        }
+    }
+
+    private void startScanner(Activity activity) {
         // Configure the scanner
         GmsDocumentScannerOptions.Builder optionsBuilder = new GmsDocumentScannerOptions.Builder()
                 .setGalleryImportAllowed(false)
@@ -95,13 +155,13 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
                 .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG, GmsDocumentScannerOptions.RESULT_FORMAT_PDF)
                 .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL);
 
-        GmsDocumentScannerOptions scannerOptions = optionsBuilder.build();
-        GmsDocumentScanner scanner = GmsDocumentScanning.getClient(scannerOptions);
+        GmsDocumentScannerOptions scannerOpts = optionsBuilder.build();
+        GmsDocumentScanner scanner = GmsDocumentScanning.getClient(scannerOpts);
 
-        scanner.getStartScanIntent(currentActivity)
+        scanner.getStartScanIntent(activity)
                 .addOnSuccessListener(intentSender -> {
                     try {
-                        currentActivity.startIntentSenderForResult(
+                        activity.startIntentSenderForResult(
                                 intentSender,
                                 DOCUMENT_SCAN_REQUEST,
                                 null,
@@ -114,7 +174,10 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
                         WritableMap errorResponse = new WritableNativeMap();
                         errorResponse.putBoolean("error", true);
                         errorResponse.putString("errorMessage", e.getMessage());
-                        callback.invoke(errorResponse);
+                        if (scannerCallback != null) {
+                            scannerCallback.invoke(errorResponse);
+                            scannerCallback = null;
+                        }
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -122,7 +185,10 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
                     WritableMap errorResponse = new WritableNativeMap();
                     errorResponse.putBoolean("error", true);
                     errorResponse.putString("errorMessage", e.getMessage());
-                    callback.invoke(errorResponse);
+                    if (scannerCallback != null) {
+                        scannerCallback.invoke(errorResponse);
+                        scannerCallback = null;
+                    }
                 });
     }
 
@@ -182,7 +248,7 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
 
     private WritableMap processImage(Uri imageUri) throws IOException {
         WritableMap imageObject = new WritableNativeMap();
-        
+
         Activity currentActivity = getCurrentActivity();
         if (currentActivity == null) {
             return null;
@@ -201,7 +267,7 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
         android.graphics.BitmapFactory.Options options = new android.graphics.BitmapFactory.Options();
         options.inJustDecodeBounds = false;
         Bitmap bitmap = android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
-        
+
         if (bitmap == null) {
             return null;
         }
@@ -222,10 +288,21 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
         String fileName = UUID.randomUUID().toString() + ".jpg";
         File cacheDir = currentActivity.getCacheDir();
         File imageFile = new File(cacheDir, fileName);
-        
+
         FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
         fileOutputStream.write(processedImageBytes);
         fileOutputStream.close();
+
+        boolean includeExif = scannerOptions != null && scannerOptions.hasKey("includeExif") && scannerOptions.getBoolean("includeExif");
+
+        // Write EXIF data to the saved file
+        WritableMap exifData = null;
+        if (includeExif) {
+            exifData = writeExifToFile(imageFile, bitmap.getWidth(), bitmap.getHeight());
+        }
+
+        // Re-read file size after EXIF write (EXIF modifies the file)
+        long fileSize = imageFile.length();
 
         // Build response
         imageObject.putString("uri", Uri.fromFile(imageFile).toString());
@@ -233,18 +310,96 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
         imageObject.putString("type", "image/jpeg");
         imageObject.putInt("width", bitmap.getWidth());
         imageObject.putInt("height", bitmap.getHeight());
-        imageObject.putInt("fileSize", processedImageBytes.length);
+        imageObject.putInt("fileSize", (int) fileSize);
 
-        // Add base64 if requested
-        if (scannerOptions != null && scannerOptions.hasKey("includeBase64") && 
+        // Add base64 if requested (re-read if EXIF was written)
+        if (scannerOptions != null && scannerOptions.hasKey("includeBase64") &&
             scannerOptions.getBoolean("includeBase64")) {
-            String base64 = Base64.encodeToString(processedImageBytes, Base64.NO_WRAP);
-            imageObject.putString("base64", base64);
+            if (includeExif) {
+                // Re-read file since EXIF modified it
+                InputStream rereadStream = new java.io.FileInputStream(imageFile);
+                byte[] finalBytes = readBytes(rereadStream);
+                rereadStream.close();
+                String base64 = Base64.encodeToString(finalBytes, Base64.NO_WRAP);
+                imageObject.putString("base64", base64);
+            } else {
+                String base64 = Base64.encodeToString(processedImageBytes, Base64.NO_WRAP);
+                imageObject.putString("base64", base64);
+            }
+        }
+
+        if (exifData != null) {
+            imageObject.putMap("exif", exifData);
         }
 
         bitmap.recycle();
-        
+
         return imageObject;
+    }
+
+    private WritableMap writeExifToFile(File imageFile, int width, int height) {
+        WritableMap exifResponse = new WritableNativeMap();
+
+        try {
+            ExifInterface exif = new ExifInterface(imageFile.getAbsolutePath());
+
+            // Timestamp
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US);
+            String dateString = dateFormat.format(new Date());
+            exif.setAttribute(ExifInterface.TAG_DATETIME, dateString);
+            exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, dateString);
+            exif.setAttribute(ExifInterface.TAG_DATETIME_DIGITIZED, dateString);
+            exifResponse.putString("DateTimeOriginal", dateString);
+            exifResponse.putString("DateTimeDigitized", dateString);
+
+            // Dimensions
+            exif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, String.valueOf(width));
+            exif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, String.valueOf(height));
+            exifResponse.putInt("PixelXDimension", width);
+            exifResponse.putInt("PixelYDimension", height);
+
+            // Device info
+            String make = Build.MANUFACTURER;
+            String model = Build.MODEL;
+            exif.setAttribute(ExifInterface.TAG_MAKE, make);
+            exif.setAttribute(ExifInterface.TAG_MODEL, model);
+            exifResponse.putString("Make", make);
+            exifResponse.putString("Model", model);
+
+            // Software
+            String software = "DocumentScanner";
+            try {
+                android.content.pm.PackageInfo pInfo = reactContext.getPackageManager()
+                        .getPackageInfo(reactContext.getPackageName(), 0);
+                software = pInfo.packageName;
+            } catch (Exception ignored) {}
+            exif.setAttribute(ExifInterface.TAG_SOFTWARE, software);
+            exifResponse.putString("Software", software);
+
+            // Color space
+            exif.setAttribute(ExifInterface.TAG_COLOR_SPACE, String.valueOf(ExifInterface.COLOR_SPACE_S_RGB));
+            exifResponse.putInt("ColorSpace", 1);
+
+            // GPS data
+            if (currentLocation != null) {
+                exif.setGpsInfo(currentLocation);
+
+                exifResponse.putDouble("GPSLatitude", currentLocation.getLatitude());
+                exifResponse.putDouble("GPSLongitude", currentLocation.getLongitude());
+                exifResponse.putDouble("GPSAltitude", currentLocation.getAltitude());
+                exifResponse.putDouble("GPSHorizontalAccuracy", currentLocation.getAccuracy());
+
+                SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US);
+                utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                exifResponse.putString("GPSDateTimeUTC", utcFormat.format(new Date(currentLocation.getTime())));
+            }
+
+            exif.saveAttributes();
+        } catch (IOException e) {
+            Log.e(TAG, "Error writing EXIF data", e);
+        }
+
+        return exifResponse;
     }
 
     private byte[] readBytes(InputStream inputStream) throws IOException {
@@ -257,5 +412,3 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
         return byteBuffer.toByteArray();
     }
 }
-
-
