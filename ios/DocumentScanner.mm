@@ -225,12 +225,12 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     // GPS timestamp (UTC)
     NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
     timeFormatter.dateFormat = @"HH:mm:ss.SSSSSS";
-    timeFormatter.timeZone = [NSTimeZone timeZoneWithIdentifier:@"UTC"];
+    timeFormatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
     gpsDict[(__bridge NSString *)kCGImagePropertyGPSTimeStamp] = [timeFormatter stringFromDate:location.timestamp];
 
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = @"yyyy:MM:dd";
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithIdentifier:@"UTC"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
     gpsDict[(__bridge NSString *)kCGImagePropertyGPSDateStamp] = [dateFormatter stringFromDate:location.timestamp];
 
     if (location.horizontalAccuracy >= 0) {
@@ -312,7 +312,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         formatter.dateFormat = @"yyyy:MM:dd HH:mm:ss";
-        formatter.timeZone = [NSTimeZone timeZoneWithIdentifier:@"UTC"];
+        formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
         exifResponse[@"GPSDateTimeUTC"] = [formatter stringFromDate:self.currentLocation.timestamp];
     }
 
