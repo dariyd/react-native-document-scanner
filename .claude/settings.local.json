@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ls -la /Users/dariy/Job/forked/react-native-document-scanner/*.ts /Users/dariy/Job/forked/react-native-document-scanner/*.tsx /Users/dariy/Job/forked/react-native-document-scanner/*.js)",
-      "Bash(wc -l /Users/dariy/Job/forked/react-native-document-scanner/android/src/main/java/com/reactlibrary/*.java)",
-      "Bash(grep -E \"\\\\.\\(ts|tsx|js|json\\)$\")"
-    ]
-  }
-}
