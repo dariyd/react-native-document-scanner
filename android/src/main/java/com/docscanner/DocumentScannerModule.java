@@ -272,6 +272,20 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
             return null;
         }
 
+        // Cap the long edge if the caller supplied maxWidth / maxHeight.
+        // Both are honored: the smaller scale factor wins so neither axis
+        // exceeds its cap. Done BEFORE compress() so the encoded JPEG
+        // carries the smaller dimensions + proportionally smaller bytes.
+        double maxWidth = 0;
+        double maxHeight = 0;
+        if (scannerOptions != null && scannerOptions.hasKey("maxWidth")) {
+            maxWidth = scannerOptions.getDouble("maxWidth");
+        }
+        if (scannerOptions != null && scannerOptions.hasKey("maxHeight")) {
+            maxHeight = scannerOptions.getDouble("maxHeight");
+        }
+        bitmap = resizeBitmapIfNeeded(bitmap, maxWidth, maxHeight);
+
         // Apply quality compression if needed
         double quality = 1.0;
         if (scannerOptions != null && scannerOptions.hasKey("quality")) {
@@ -410,5 +424,29 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
             byteBuffer.write(buffer, 0, len);
         }
         return byteBuffer.toByteArray();
+    }
+
+    /**
+     * Cap the long edge of the bitmap at maxWidth × maxHeight (both
+     * applied; smaller scale factor wins so neither axis exceeds its
+     * cap). Returns the input unchanged when either cap is zero/missing
+     * or when the bitmap is already within bounds. Aspect ratio
+     * preserved. Recycles the original bitmap when a resized copy is
+     * produced — the caller MUST NOT keep a reference to the original
+     * after this call.
+     */
+    private Bitmap resizeBitmapIfNeeded(Bitmap bitmap, double maxWidth, double maxHeight) {
+        if (maxWidth <= 0 || maxHeight <= 0) return bitmap;
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        if (width <= maxWidth && height <= maxHeight) return bitmap;
+        double scale = Math.min(maxWidth / (double) width, maxHeight / (double) height);
+        int newWidth = (int) Math.floor(width * scale);
+        int newHeight = (int) Math.floor(height * scale);
+        Bitmap resized = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+        if (resized != bitmap) {
+            bitmap.recycle();
+        }
+        return resized;
     }
 }

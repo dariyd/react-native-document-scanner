@@ -24,6 +24,18 @@ export interface Options {
   includeBase64?: boolean;
   includeExif?: boolean;
   includeLocationExif?: boolean;
+  /**
+   * Cap the long edge of the encoded image at this many pixels. The
+   * native side keeps aspect ratio: the actual output is `min(scale)`
+   * applied to both axes. Pass `0` (or omit) to disable.
+   */
+  maxWidth?: number;
+  /**
+   * Sibling of `maxWidth` — caps the OTHER dimension. Both are
+   * applied; the smaller of the two scaling factors wins so neither
+   * axis exceeds its cap.
+   */
+  maxHeight?: number;
 }
 
 export interface Spec extends TurboModule {
