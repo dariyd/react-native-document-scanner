@@ -19,11 +19,16 @@ export interface ScanResult {
   images?: ImageObject[];
 }
 
+export type ScannerMode = 'base' | 'base-with-filter' | 'full';
+
 export interface Options {
   quality?: number;
   includeBase64?: boolean;
   includeExif?: boolean;
   includeLocationExif?: boolean;
+  maxNumDocuments?: number;
+  scannerMode?: ScannerMode;
+  galleryImportAllowed?: boolean;
 }
 
 export interface Spec extends TurboModule {
@@ -31,4 +36,3 @@ export interface Spec extends TurboModule {
 }
 
 export default TurboModuleRegistry.get<Spec>('DocumentScanner');
-

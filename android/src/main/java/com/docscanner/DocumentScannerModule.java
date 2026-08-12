@@ -64,6 +64,7 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
     private final ReactApplicationContext reactContext;
     private Callback scannerCallback;
     private ReadableMap scannerOptions;
+    private ScannerConfig scannerConfig;
     private Location currentLocation;
 
     private final ActivityEventListener activityEventListener = new BaseActivityEventListener() {
@@ -96,6 +97,23 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
             errorResponse.putBoolean("error", true);
             errorResponse.putString("errorMessage", "Activity doesn't exist");
             callback.invoke(errorResponse);
+            return;
+        }
+
+        try {
+            scannerConfig = ScannerConfig.from(
+                    options != null && options.hasKey("maxNumDocuments") && !options.isNull("maxNumDocuments")
+                            ? options.getDouble("maxNumDocuments")
+                            : null,
+                    options != null && options.hasKey("scannerMode") && !options.isNull("scannerMode")
+                            ? options.getString("scannerMode")
+                            : null,
+                    options != null && options.hasKey("galleryImportAllowed") && !options.isNull("galleryImportAllowed")
+                            ? options.getBoolean("galleryImportAllowed")
+                            : null
+            );
+        } catch (RuntimeException e) {
+            sendError(callback, e.getMessage() != null ? e.getMessage() : "Invalid scanner options");
             return;
         }
 
@@ -148,15 +166,20 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
     }
 
     private void startScanner(Activity activity) {
-        // Configure the scanner
-        GmsDocumentScannerOptions.Builder optionsBuilder = new GmsDocumentScannerOptions.Builder()
-                .setGalleryImportAllowed(false)
-                .setPageLimit(10)
-                .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG, GmsDocumentScannerOptions.RESULT_FORMAT_PDF)
-                .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL);
-
-        GmsDocumentScannerOptions scannerOpts = optionsBuilder.build();
-        GmsDocumentScanner scanner = GmsDocumentScanning.getClient(scannerOpts);
+        final GmsDocumentScanner scanner;
+        try {
+            GmsDocumentScannerOptions scannerOpts = new GmsDocumentScannerOptions.Builder()
+                    .setGalleryImportAllowed(scannerConfig.galleryImportAllowed)
+                    .setPageLimit(scannerConfig.pageLimit)
+                    .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG, GmsDocumentScannerOptions.RESULT_FORMAT_PDF)
+                    .setScannerMode(scannerConfig.scannerMode)
+                    .build();
+            scanner = GmsDocumentScanning.getClient(scannerOpts);
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Invalid scanner configuration", e);
+            sendScannerError(e.getMessage() != null ? e.getMessage() : "Invalid scanner options");
+            return;
+        }
 
         scanner.getStartScanIntent(activity)
                 .addOnSuccessListener(intentSender -> {
@@ -190,6 +213,20 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
                         scannerCallback = null;
                     }
                 });
+    }
+
+    private static void sendError(Callback callback, String message) {
+        WritableMap errorResponse = new WritableNativeMap();
+        errorResponse.putBoolean("error", true);
+        errorResponse.putString("errorMessage", message);
+        callback.invoke(errorResponse);
+    }
+
+    private void sendScannerError(String message) {
+        if (scannerCallback != null) {
+            sendError(scannerCallback, message);
+            scannerCallback = null;
+        }
     }
 
     private void handleScanResult(int resultCode, Intent data) {

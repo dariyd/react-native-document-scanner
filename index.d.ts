@@ -66,6 +66,8 @@ export interface ScanResult {
   images?: ImageObject[];
 }
 
+export type ScannerMode = "base" | "base-with-filter" | "full";
+
 export interface ScanOptions {
   /**
    * Image quality from 0 to 1 (default: 1)
@@ -102,6 +104,28 @@ export interface ScanOptions {
    * @default false
    */
   includeLocationExif?: boolean;
+
+  /**
+   * Maximum number of documents that can be scanned. Android only.
+   * Must be an integer greater than or equal to 1.
+   *
+   * @default 10
+   */
+  maxNumDocuments?: number;
+
+  /**
+   * ML Kit scanner feature set. Android only.
+   *
+   * @default "full"
+   */
+  scannerMode?: ScannerMode;
+
+  /**
+   * Whether documents can be imported from the gallery. Android only.
+   *
+   * @default false
+   */
+  galleryImportAllowed?: boolean;
 }
 
 /**
@@ -149,4 +173,3 @@ declare const DocumentScanner: {
 };
 
 export default DocumentScanner;
-

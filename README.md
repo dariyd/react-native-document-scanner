@@ -130,6 +130,14 @@ const result = await launchScanner({
   includeBase64: false,
 });
 
+// With Android ML Kit scanner options (ignored on iOS)
+const result = await launchScanner({
+  quality: 0.9,
+  maxNumDocuments: 1,
+  scannerMode: "base",
+  galleryImportAllowed: false,
+});
+
 // With EXIF metadata
 const result = await launchScanner({
   quality: 0.8,
@@ -181,6 +189,11 @@ The `callback` will be called with a response object, refer to [The Response Obj
 | includeBase64       | ✅  | ✅      | If true, creates base64 string of the image (Avoid using on large image files due to performance)                                         |
 | includeExif         | ✅  | ✅      | If true, embeds EXIF metadata (timestamps, device info, dimensions) in the image file and returns it in the response (default: false)      |
 | includeLocationExif | ✅  | ✅      | If true, also embeds GPS coordinates in EXIF. Requires location permission — see [Location Permission Setup](#location-permission-setup) (default: false) |
+| maxNumDocuments     | ❌  | ✅      | Maximum number of documents. Must be an integer greater than or equal to 1 (default: 10)                                                   |
+| scannerMode         | ❌  | ✅      | ML Kit feature set: `"base"`, `"base-with-filter"`, or `"full"` (default: `"full"`)                                                   |
+| galleryImportAllowed | ❌ | ✅      | If true, allows importing documents from the gallery (default: false)                                                                     |
+
+The last three options are Android-only and do not change the iOS VisionKit scanner behavior.
 
 ## The Response Object
 
