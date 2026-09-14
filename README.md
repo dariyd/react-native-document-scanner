@@ -27,6 +27,7 @@ Fast, native React Native document scanner for iOS and Android using Apple Visio
 - 📸 Automatic document detection and scanning
 - 🖼️ Multi-page document scanning
 - ⚙️ Configurable image quality
+- 📐 Optional max width/height to cap image size
 - 📦 Optional base64 encoding
 - 🎯 Platform parity - same API for both platforms
 
@@ -145,6 +146,13 @@ const result = await launchScanner({
 });
 console.log('GPS:', result.images[0].exif?.GPSLatitude, result.images[0].exif?.GPSLongitude);
 
+// Cap image size (e.g. to keep uploads small)
+const result = await launchScanner({
+  quality: 0.85,
+  maxWidth: 2048,
+  maxHeight: 2048,
+});
+
 // With callback (optional)
 launchScanner({ quality: 0.9 }, (result) => {
   if (result.didCancel) {
@@ -181,6 +189,8 @@ The `callback` will be called with a response object, refer to [The Response Obj
 | includeBase64       | ✅  | ✅      | If true, creates base64 string of the image (Avoid using on large image files due to performance)                                         |
 | includeExif         | ✅  | ✅      | If true, embeds EXIF metadata (timestamps, device info, dimensions) in the image file and returns it in the response (default: false)      |
 | includeLocationExif | ✅  | ✅      | If true, also embeds GPS coordinates in EXIF. Requires location permission — see [Location Permission Setup](#location-permission-setup) (default: false) |
+| maxWidth            | ✅  | ✅      | Max width in pixels. If the scanned image is wider, it is scaled down before encoding (aspect ratio preserved). `0` or omitted = no cap (default: 0) |
+| maxHeight           | ✅  | ✅      | Max height in pixels. Works together with `maxWidth` — the smaller scale factor wins so neither side exceeds its cap. `0` or omitted = no cap (default: 0) |
 
 ## The Response Object
 

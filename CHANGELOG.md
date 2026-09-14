@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-09-14
+
+### Added
+- **`maxWidth` / `maxHeight` options** to cap the pixel size of each scanned page before encoding (iOS and Android). Aspect ratio is preserved; the smaller scale factor wins so neither axis exceeds its cap. Pass `0` or omit to keep the current behavior (no cap). Useful for limiting file size for uploads. Thanks to [@renelaerke](https://github.com/renelaerke) ([#7](https://github.com/dariyd/react-native-document-scanner/pull/7)).
+
 ## [2.0.0] - 2025-10-19
 
 ### 🎉 Major Release - Android Support & New Architecture
