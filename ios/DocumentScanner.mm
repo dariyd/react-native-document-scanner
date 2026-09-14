@@ -60,6 +60,12 @@ RCT_EXPORT_MODULE()
     if (options.includeLocationExif().has_value()) {
         opts[@"includeLocationExif"] = @(options.includeLocationExif().value());
     }
+    if (options.maxWidth().has_value()) {
+        opts[@"maxWidth"] = @(options.maxWidth().value());
+    }
+    if (options.maxHeight().has_value()) {
+        opts[@"maxHeight"] = @(options.maxHeight().value());
+    }
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self launchDocScanner:opts callback:callback];
@@ -413,13 +419,49 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 
 - (void)documentCameraViewController:(VNDocumentCameraViewController *)controller didFinishWithScan:(VNDocumentCameraScan *)scan{
     NSMutableArray *scannedImages = [NSMutableArray array];
+    CGFloat maxWidth = [self.options[@"maxWidth"] floatValue];
+    CGFloat maxHeight = [self.options[@"maxHeight"] floatValue];
     for (int i = 0; i < [scan pageCount]; i++) {
-        UIImage *image =  [scan imageOfPageAtIndex:i];
-        [scannedImages addObject:[self mapImageToAsset:image]];
+        UIImage *image = [scan imageOfPageAtIndex:i];
+        UIImage *capped = [self resizeImageIfNeeded:image
+                                          maxWidth:maxWidth
+                                         maxHeight:maxHeight];
+        [scannedImages addObject:[self mapImageToAsset:capped]];
     }
 
     [controller dismissViewControllerAnimated:true completion:^{
         self.callback(@[@{ @"images": scannedImages }]);
+    }];
+}
+
+/**
+ * Cap the long edge of the UIImage at maxWidth × maxHeight (both
+ * applied; smaller scale factor wins so neither axis exceeds its
+ * cap). Returns the input unchanged when either cap is zero/missing
+ * or when the image is already within bounds. Aspect ratio
+ * preserved. Called BEFORE encoding so the encoded JPEG/PNG carries
+ * the resized dimensions and proportionally smaller file size.
+ */
+- (UIImage *)resizeImageIfNeeded:(UIImage *)image
+                        maxWidth:(CGFloat)maxWidth
+                       maxHeight:(CGFloat)maxHeight {
+    if (maxWidth <= 0 || maxHeight <= 0) return image;
+    CGFloat width = image.size.width;
+    CGFloat height = image.size.height;
+    if (width <= maxWidth && height <= maxHeight) return image;
+    CGFloat scale = MIN(maxWidth / width, maxHeight / height);
+    CGSize newSize = CGSizeMake(floor(width * scale), floor(height * scale));
+    UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat preferredFormat];
+    // Receipts have no alpha; opaque saves ~25 % at draw time and
+    // matches the JPEG branch's flatten-to-white behavior.
+    format.opaque = YES;
+    // We want the literal pixel dimensions in the output, not
+    // multiplied by the screen's scale factor.
+    format.scale = 1.0;
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:newSize
+                                                                               format:format];
+    return [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+        [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
     }];
 }
 

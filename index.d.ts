@@ -102,6 +102,31 @@ export interface ScanOptions {
    * @default false
    */
   includeLocationExif?: boolean;
+
+  /**
+   * Cap the encoded image's long edge at this many pixels. Both
+   * `maxWidth` and `maxHeight` are honored: the native resizer uses
+   * the smaller scaling factor of the two so neither axis exceeds
+   * its cap. Aspect ratio is preserved.
+   *
+   * Pass `0` or omit to disable. Defaults to no cap (native scanner
+   * resolution is returned, which can be 3000+ pixels).
+   *
+   * iOS: implemented via `UIGraphicsImageRenderer` before
+   * `UIImageJPEGRepresentation` / `UIImagePNGRepresentation`.
+   * Android: implemented via `Bitmap.createScaledBitmap` before
+   * `Bitmap.compress`.
+   *
+   * @default 0 (no cap)
+   */
+  maxWidth?: number;
+
+  /**
+   * See {@link maxWidth}. Both values are applied together.
+   *
+   * @default 0 (no cap)
+   */
+  maxHeight?: number;
 }
 
 /**
