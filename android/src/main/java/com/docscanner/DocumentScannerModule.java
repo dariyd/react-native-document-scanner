@@ -148,12 +148,40 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
     }
 
     private void startScanner(Activity activity) {
-        // Configure the scanner
+        // ML Kit scanner settings (Android only). Defaults match the
+        // values that were hardcoded before they became configurable.
+        int pageLimit = 10;
+        if (scannerOptions != null && scannerOptions.hasKey("pageLimit")) {
+            pageLimit = Math.max(1, (int) scannerOptions.getDouble("pageLimit"));
+        }
+
+        boolean galleryImportAllowed = scannerOptions != null
+                && scannerOptions.hasKey("galleryImportAllowed")
+                && scannerOptions.getBoolean("galleryImportAllowed");
+
+        int scannerMode = GmsDocumentScannerOptions.SCANNER_MODE_FULL;
+        if (scannerOptions != null && scannerOptions.hasKey("scannerMode")) {
+            String mode = scannerOptions.getString("scannerMode");
+            if ("base".equals(mode)) {
+                scannerMode = GmsDocumentScannerOptions.SCANNER_MODE_BASE;
+            } else if ("base_with_filter".equals(mode)) {
+                scannerMode = GmsDocumentScannerOptions.SCANNER_MODE_BASE_WITH_FILTER;
+            }
+        }
+
+        // JPEG pages are always produced so `images` keeps working.
+        // The PDF is only requested when the caller asks for it.
         GmsDocumentScannerOptions.Builder optionsBuilder = new GmsDocumentScannerOptions.Builder()
-                .setGalleryImportAllowed(false)
-                .setPageLimit(10)
-                .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG, GmsDocumentScannerOptions.RESULT_FORMAT_PDF)
-                .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL);
+                .setGalleryImportAllowed(galleryImportAllowed)
+                .setPageLimit(pageLimit)
+                .setScannerMode(scannerMode);
+        if (includePdf()) {
+            optionsBuilder.setResultFormats(
+                    GmsDocumentScannerOptions.RESULT_FORMAT_JPEG,
+                    GmsDocumentScannerOptions.RESULT_FORMAT_PDF);
+        } else {
+            optionsBuilder.setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG);
+        }
 
         GmsDocumentScannerOptions scannerOpts = optionsBuilder.build();
         GmsDocumentScanner scanner = GmsDocumentScanning.getClient(scannerOpts);
@@ -242,8 +270,62 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
 
         WritableMap response = new WritableNativeMap();
         response.putArray("images", imagesArray);
+
+        if (includePdf() && result.getPdf() != null) {
+            try {
+                WritableMap pdfObject = processPdf(result.getPdf());
+                if (pdfObject != null) {
+                    response.putMap("pdf", pdfObject);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error processing PDF", e);
+            }
+        }
+
         scannerCallback.invoke(response);
         scannerCallback = null;
+    }
+
+    private boolean includePdf() {
+        return scannerOptions != null
+                && scannerOptions.hasKey("includePdf")
+                && scannerOptions.getBoolean("includePdf");
+    }
+
+    /**
+     * Copies the ML Kit PDF into the app cache directory so the URI stays
+     * valid after the scanner activity is gone. Note: the PDF is built by
+     * ML Kit at its own resolution — quality, maxWidth/maxHeight and EXIF
+     * options do not apply to it.
+     */
+    private WritableMap processPdf(GmsDocumentScanningResult.Pdf pdf) throws IOException {
+        Activity currentActivity = getCurrentActivity();
+        if (currentActivity == null) {
+            return null;
+        }
+
+        InputStream inputStream = currentActivity.getContentResolver().openInputStream(pdf.getUri());
+        if (inputStream == null) {
+            return null;
+        }
+
+        byte[] pdfBytes = readBytes(inputStream);
+        inputStream.close();
+
+        String fileName = UUID.randomUUID().toString() + ".pdf";
+        File pdfFile = new File(currentActivity.getCacheDir(), fileName);
+
+        FileOutputStream fileOutputStream = new FileOutputStream(pdfFile);
+        fileOutputStream.write(pdfBytes);
+        fileOutputStream.close();
+
+        WritableMap pdfObject = new WritableNativeMap();
+        pdfObject.putString("uri", Uri.fromFile(pdfFile).toString());
+        pdfObject.putInt("pageCount", pdf.getPageCount());
+        pdfObject.putInt("fileSize", pdfBytes.length);
+        pdfObject.putString("fileName", fileName);
+        pdfObject.putString("type", "application/pdf");
+        return pdfObject;
     }
 
     private WritableMap processImage(Uri imageUri) throws IOException {

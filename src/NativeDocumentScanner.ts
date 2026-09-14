@@ -12,11 +12,20 @@ export interface ImageObject {
   exif?: Record<string, any>;
 }
 
+export interface PdfObject {
+  uri: string;
+  pageCount: number;
+  fileSize: number;
+  fileName: string;
+  type: string;
+}
+
 export interface ScanResult {
   didCancel?: boolean;
   error?: boolean;
   errorMessage?: string;
   images?: ImageObject[];
+  pdf?: PdfObject;
 }
 
 export interface Options {
@@ -36,6 +45,14 @@ export interface Options {
    * axis exceeds its cap.
    */
   maxHeight?: number;
+  /** Android only. Max number of pages per scan session. Default 10. */
+  pageLimit?: number;
+  /** Android only. Allow importing from the gallery. Default false. */
+  galleryImportAllowed?: boolean;
+  /** Android only. One of 'base' | 'base_with_filter' | 'full'. Default 'full'. */
+  scannerMode?: string;
+  /** Android only. Also return a PDF of all pages as `pdf`. Default false. */
+  includePdf?: boolean;
 }
 
 export interface Spec extends TurboModule {
