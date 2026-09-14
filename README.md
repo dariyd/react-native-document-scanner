@@ -16,9 +16,9 @@ Fast, native React Native document scanner for iOS and Android using Apple Visio
 
 ## Used in Production Apps
 
-| [FileNest AI - Docs Organizer](https://apps.apple.com/us/app/filenest-ai-docs-organizer/id6756841050) | [MyGarage - CarDocs & History](https://apps.apple.com/us/app/mygarage-cardocs-history/id6757166595) |
-|:---:|:---:|
-| [![FileNest AI](./assets/FileNest%20AI.gif)](https://apps.apple.com/us/app/filenest-ai-docs-organizer/id6756841050) | [![MyGarage](./assets/MyGarage%20%7C%20CarDocs%20%26%20History.gif)](https://apps.apple.com/us/app/mygarage-cardocs-history/id6757166595) |
+| [FileNest AI - Docs Organizer](https://apps.apple.com/us/app/filenest-ai-docs-organizer/id6756841050) | [MyGarage - CarDocs & History](https://apps.apple.com/us/app/mygarage-cardocs-history/id6757166595) | [MyLabStory](https://apps.apple.com/us/app/mylabstory/id6757186292) |
+|:---:|:---:|:---:|
+| [![FileNest AI](./assets/FileNest%20AI.gif)](https://apps.apple.com/us/app/filenest-ai-docs-organizer/id6756841050) | [![MyGarage](./assets/MyGarage%20%7C%20CarDocs%20%26%20History.gif)](https://apps.apple.com/us/app/mygarage-cardocs-history/id6757166595) | [![MyLabStory](./assets/MyLabStory.gif)](https://apps.apple.com/us/app/mylabstory/id6757186292) |
 
 ## Features
 
