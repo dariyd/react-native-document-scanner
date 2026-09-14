@@ -23,6 +23,11 @@ const DEFAULT_OPTIONS = {
   includeBase64: false,
   includeExif: false,
   includeLocationExif: false,
+  // Android only — ignored on iOS
+  pageLimit: 10,
+  galleryImportAllowed: false,
+  scannerMode: 'full',
+  includePdf: false,
 };
 
 export function launchScanner(options = {}, callback) {

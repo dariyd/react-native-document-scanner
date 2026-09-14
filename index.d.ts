@@ -44,6 +44,46 @@ export interface ImageObject {
   exif?: Record<string, any>;
 }
 
+/**
+ * PDF of all scanned pages (Android only, when `includePdf` is true).
+ * Built by ML Kit at its own resolution — `quality`, `maxWidth`/`maxHeight`
+ * and EXIF options do not affect it.
+ */
+export interface PdfObject {
+  /**
+   * The file URI in app specific cache storage
+   */
+  uri: string;
+
+  /**
+   * Number of pages in the PDF
+   */
+  pageCount: number;
+
+  /**
+   * The file size in bytes
+   */
+  fileSize: number;
+
+  /**
+   * The file name
+   */
+  fileName: string;
+
+  /**
+   * The file MIME type ("application/pdf")
+   */
+  type: string;
+}
+
+/**
+ * ML Kit scanner mode (Android only)
+ * - `base`: basic editing (crop, rotate, reorder pages)
+ * - `base_with_filter`: base + image filters (grayscale, auto enhancement)
+ * - `full`: base_with_filter + ML-enabled cleaning (erase stains, fingers, etc.)
+ */
+export type ScannerMode = 'base' | 'base_with_filter' | 'full';
+
 export interface ScanResult {
   /**
    * True if the user cancelled the scanning process
@@ -64,6 +104,12 @@ export interface ScanResult {
    * Array of scanned images
    */
   images?: ImageObject[];
+
+  /**
+   * PDF of all scanned pages. Android only — present only when
+   * `includePdf` is true. Never set on iOS.
+   */
+  pdf?: PdfObject;
 }
 
 export interface ScanOptions {
@@ -127,6 +173,42 @@ export interface ScanOptions {
    * @default 0 (no cap)
    */
   maxHeight?: number;
+
+  /**
+   * **Android only.** Maximum number of pages that can be scanned in one
+   * session. Values below 1 are treated as 1. Ignored on iOS.
+   *
+   * @default 10
+   */
+  pageLimit?: number;
+
+  /**
+   * **Android only.** If true, the ML Kit scanner lets the user import
+   * images from the gallery instead of using the camera. Ignored on iOS.
+   *
+   * @default false
+   */
+  galleryImportAllowed?: boolean;
+
+  /**
+   * **Android only.** ML Kit scanner mode — see {@link ScannerMode}.
+   * Unknown values fall back to `'full'`. Ignored on iOS.
+   *
+   * @default 'full'
+   */
+  scannerMode?: ScannerMode;
+
+  /**
+   * **Android only.** If true, the response also contains a `pdf` object
+   * with all scanned pages in a single PDF file. `images` is always
+   * returned regardless of this flag. Ignored on iOS (no `pdf` field).
+   *
+   * Note: the PDF is built by ML Kit at its own resolution — `quality`,
+   * `maxWidth`/`maxHeight` and EXIF options do not apply to it.
+   *
+   * @default false
+   */
+  includePdf?: boolean;
 }
 
 /**

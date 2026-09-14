@@ -28,6 +28,7 @@ Fast, native React Native document scanner for iOS and Android using Apple Visio
 - 🖼️ Multi-page document scanning
 - ⚙️ Configurable image quality
 - 📐 Optional max width/height to cap image size
+- 📄 Android: optional PDF output and configurable ML Kit scanner (page limit, gallery import, scanner mode)
 - 📦 Optional base64 encoding
 - 🎯 Platform parity - same API for both platforms
 
@@ -153,6 +154,19 @@ const result = await launchScanner({
   maxHeight: 2048,
 });
 
+// Android only: configure the ML Kit scanner and get a PDF too
+// (these options are ignored on iOS, `result.pdf` is never set there)
+const result = await launchScanner({
+  pageLimit: 20,
+  galleryImportAllowed: true,
+  scannerMode: 'base_with_filter',
+  includePdf: true,
+});
+console.log('Images:', result.images);
+if (result.pdf) {
+  console.log('PDF:', result.pdf.uri, result.pdf.pageCount, 'pages');
+}
+
 // With callback (optional)
 launchScanner({ quality: 0.9 }, (result) => {
   if (result.didCancel) {
@@ -191,6 +205,20 @@ The `callback` will be called with a response object, refer to [The Response Obj
 | includeLocationExif | ✅  | ✅      | If true, also embeds GPS coordinates in EXIF. Requires location permission — see [Location Permission Setup](#location-permission-setup) (default: false) |
 | maxWidth            | ✅  | ✅      | Max width in pixels. If the scanned image is wider, it is scaled down before encoding (aspect ratio preserved). `0` or omitted = no cap (default: 0) |
 | maxHeight           | ✅  | ✅      | Max height in pixels. Works together with `maxWidth` — the smaller scale factor wins so neither side exceeds its cap. `0` or omitted = no cap (default: 0) |
+| pageLimit           | ❌  | ✅      | ⚠️ Android only. Max number of pages per scan session. Values below 1 are treated as 1 (default: 10)                                    |
+| galleryImportAllowed| ❌  | ✅      | ⚠️ Android only. If true, the user can import images from the gallery instead of the camera (default: false)                             |
+| scannerMode         | ❌  | ✅      | ⚠️ Android only. `'base'`, `'base_with_filter'` or `'full'` — see [Scanner Modes](#scanner-modes-android-only) (default: `'full'`)     |
+| includePdf          | ❌  | ✅      | ⚠️ Android only. If true, the response also contains a `pdf` object with all pages — see [PDF Object](#pdf-object-android-only). `images` is always returned (default: false) |
+
+> ⚠️ The four options above configure the ML Kit scanner and are **ignored on iOS** — passing them is safe, they simply have no effect there.
+
+### Scanner Modes (Android only)
+
+| Mode               | Description                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| `base`             | Basic editing: crop, rotate, reorder pages                                               |
+| `base_with_filter` | `base` + image filters (grayscale, auto enhancement)                                     |
+| `full`             | `base_with_filter` + ML-enabled cleaning (erase stains, fingers, etc.). This is the default |
 
 ## The Response Object
 
@@ -200,6 +228,7 @@ The `callback` will be called with a response object, refer to [The Response Obj
 | error        | ✅  | ✅      | `true` if error happens                                             |
 | errorMessage | ✅  | ✅      | Description of the error, use it for debug purpose only             |
 | images       | ✅  | ✅      | Array of the selected media, [refer to Image Object](#image-object) |
+| pdf          | ❌  | ✅      | ⚠️ Android only. PDF of all pages, only if `includePdf` is true — [refer to PDF Object](#pdf-object-android-only) |
 
 ## Image Object
 
@@ -213,6 +242,20 @@ The `callback` will be called with a response object, refer to [The Response Obj
 | type      | ✅  | ✅      | The file MIME type (e.g., "image/jpeg")            |
 | fileName  | ✅  | ✅      | The file name                                      |
 | exif      | ✅  | ✅      | EXIF metadata object (if includeExif is true). See [EXIF Object](#exif-object) |
+
+## PDF Object (Android only)
+
+When `includePdf` is `true` on Android, the response also contains a `pdf` object. It is never present on iOS.
+
+| key       | iOS | Android | Description                                        |
+| --------- | --- | ------- | -------------------------------------------------- |
+| uri       | ❌  | ✅      | The file uri in app specific cache storage         |
+| pageCount | ❌  | ✅      | Number of pages in the PDF                         |
+| fileSize  | ❌  | ✅      | The file size in bytes                             |
+| type      | ❌  | ✅      | The file MIME type (`"application/pdf"`)           |
+| fileName  | ❌  | ✅      | The file name                                      |
+
+> ⚠️ The PDF is built by ML Kit at its own resolution. The `quality`, `maxWidth` / `maxHeight` and `includeExif` / `includeLocationExif` options only apply to the images in `images`, **not** to the PDF.
 
 ## EXIF Object
 
@@ -271,7 +314,8 @@ While both platforms provide similar functionality, there are some minor differe
 - Uses Google ML Kit Document Scanner
 - Minimum SDK: API level 21 (Android 5.0)
 - Target SDK: API level 35 (Android 15) - Google Play Store requirement
-- Always outputs JPEG format
+- Always outputs JPEG format (plus an optional PDF when `includePdf` is true)
+- Scanner behavior is configurable via `pageLimit`, `galleryImportAllowed`, `scannerMode` — no iOS equivalents
 - Requires Google Play Services
 
 ## Troubleshooting

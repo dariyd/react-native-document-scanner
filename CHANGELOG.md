@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-09-14
+
+### Added
+- **Android:** ML Kit scanner options are now configurable from JS (closes [#10](https://github.com/dariyd/react-native-document-scanner/issues/10)):
+  - `pageLimit` — max pages per scan session (default `10`)
+  - `galleryImportAllowed` — allow importing from the gallery (default `false`)
+  - `scannerMode` — `'base'`, `'base_with_filter'` or `'full'` (default `'full'`)
+- **Android:** `includePdf` option — when `true`, the response contains a new `pdf` object (`uri`, `pageCount`, `fileSize`, `fileName`, `type`) with all pages in one PDF file, copied to the app cache. `images` is always returned as before.
+
+### Notes
+- All of the above are **Android only** and are ignored on iOS. Existing behavior is unchanged when they are not passed.
+- The PDF is built by ML Kit at its own resolution — `quality`, `maxWidth`/`maxHeight` and EXIF options do not apply to it.
+
 ## [2.1.0] - 2026-09-14
 
 ### Added
