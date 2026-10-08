@@ -33,6 +33,12 @@ export interface Options {
   includeBase64?: boolean;
   includeExif?: boolean;
   includeLocationExif?: boolean;
+  /** One of 'approximate' | 'balanced' | 'precise'. Default 'precise'. */
+  locationAccuracy?: string;
+  /** Whether the scanner may prompt for location permission. Default true. */
+  requestLocationPermission?: boolean;
+  /** iOS only. NSLocationTemporaryUsageDescriptionDictionary key for the precise-location upgrade. */
+  locationPurposeKey?: string;
   /**
    * Cap the long edge of the encoded image at this many pixels. The
    * native side keeps aspect ratio: the actual output is `min(scale)`
