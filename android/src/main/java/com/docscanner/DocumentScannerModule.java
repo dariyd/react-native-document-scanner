@@ -208,7 +208,13 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
         try {
             locationClient = LocationServices.getFusedLocationProviderClient(activity);
             locationClient.getLastLocation()
-                    .addOnSuccessListener(this::considerLocation)
+                    .addOnSuccessListener(location -> {
+                        considerLocation(location);
+                        // A cached fix that already meets the target ends the search.
+                        if (hasTargetFix()) {
+                            stopLocationCapture();
+                        }
+                    })
                     .addOnFailureListener(e -> Log.w(TAG, "getLastLocation failed", e));
 
             LocationRequest request = new LocationRequest.Builder(priorityForLevel(locationAccuracyLevel()), 1000)
