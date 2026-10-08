@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Log;
 
@@ -28,11 +30,14 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.modules.core.PermissionAwareActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-import com.google.android.gms.tasks.CancellationTokenSource;
 
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanner;
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions;
@@ -65,6 +70,14 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
     private Callback scannerCallback;
     private ReadableMap scannerOptions;
     private Location currentLocation;
+    // Target accuracy (metres) for the current scan: location updates stop
+    // once a fix this good arrives, or when the scanner closes.
+    private float targetAccuracy;
+    private FusedLocationProviderClient locationClient;
+    private LocationCallback locationCallback;
+
+    // A cached fix older than this is not used to seed the scan.
+    private static final long MAX_CACHED_LOCATION_AGE_MS = 5 * 60 * 1000;
 
     private final ActivityEventListener activityEventListener = new BaseActivityEventListener() {
         @Override
@@ -112,39 +125,142 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
         }
     }
 
+    /**
+     * Location is best-effort and never delays the camera: at most we wait
+     * for the user's answer to a permission prompt, never for a fix.
+     */
     private void fetchLocationThenScan(Activity activity) {
-        // Check permission
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Request permission
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST);
-            // We can't wait for the permission result in a clean way from a library module,
-            // so we proceed without location if permission is not already granted.
-            // The permission dialog will show, and next time the user scans, it will be available.
+        String level = locationAccuracyLevel();
+        targetAccuracy = targetAccuracyForLevel(level);
+        boolean needsPrecise = !"approximate".equals(level);
+
+        if (hasRequiredPermission(activity, needsPrecise)
+                || !mayRequestPermission()
+                || !(activity instanceof PermissionAwareActivity)) {
+            // Either nothing to ask, or we may not ask: use whatever is
+            // granted (possibly nothing) and open the camera immediately.
+            startLocationCapture(activity);
             startScanner(activity);
             return;
         }
 
-        // Permission already granted — fetch location
-        try {
-            FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(activity);
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        // Ask for exactly the tier the level needs. Android 12+ requires
+        // COARSE alongside FINE. The OS itself suppresses the dialog once the
+        // user has permanently denied it. The camera opens after the answer.
+        String[] permissions = needsPrecise
+                ? new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}
+                : new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
+        ((PermissionAwareActivity) activity).requestPermissions(permissions, LOCATION_PERMISSION_REQUEST,
+                (requestCode, perms, grantResults) -> {
+                    if (requestCode != LOCATION_PERMISSION_REQUEST) return false;
+                    startLocationCapture(activity);
+                    startScanner(activity);
+                    return true;
+                });
+    }
 
-            locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
-                    .addOnSuccessListener(location -> {
-                        currentLocation = location;
-                        startScanner(activity);
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.w(TAG, "Failed to get location, proceeding without GPS", e);
-                        startScanner(activity);
-                    });
-        } catch (SecurityException e) {
-            Log.w(TAG, "Location permission denied", e);
-            startScanner(activity);
+    private String locationAccuracyLevel() {
+        if (scannerOptions != null && scannerOptions.hasKey("locationAccuracy")) {
+            String level = scannerOptions.getString("locationAccuracy");
+            if ("approximate".equals(level) || "balanced".equals(level)) return level;
         }
+        return "precise";
+    }
+
+    private boolean mayRequestPermission() {
+        return scannerOptions == null
+                || !scannerOptions.hasKey("requestLocationPermission")
+                || scannerOptions.getBoolean("requestLocationPermission");
+    }
+
+    private static boolean isGranted(Activity activity, String permission) {
+        return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private static boolean hasRequiredPermission(Activity activity, boolean needsPrecise) {
+        if (isGranted(activity, Manifest.permission.ACCESS_FINE_LOCATION)) return true;
+        return !needsPrecise && isGranted(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
+    }
+
+    private static float targetAccuracyForLevel(String level) {
+        if ("approximate".equals(level)) return 3000f;
+        if ("balanced".equals(level)) return 100f;
+        return 10f;
+    }
+
+    private static int priorityForLevel(String level) {
+        if ("approximate".equals(level)) return Priority.PRIORITY_LOW_POWER;
+        if ("balanced".equals(level)) return Priority.PRIORITY_BALANCED_POWER_ACCURACY;
+        return Priority.PRIORITY_HIGH_ACCURACY;
+    }
+
+    /**
+     * Seed from a recent cached fix, then stream updates in parallel with the
+     * scanner, keeping the best fix so far. Whatever we hold when the scan is
+     * saved is stamped into the EXIF. No-op without any location permission.
+     */
+    private void startLocationCapture(Activity activity) {
+        if (!isGranted(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+                && !isGranted(activity, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            return;
+        }
+        stopLocationCapture();
+        try {
+            locationClient = LocationServices.getFusedLocationProviderClient(activity);
+            locationClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        considerLocation(location);
+                        // A cached fix that already meets the target ends the search.
+                        if (hasTargetFix()) {
+                            stopLocationCapture();
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.w(TAG, "getLastLocation failed", e));
+
+            LocationRequest request = new LocationRequest.Builder(priorityForLevel(locationAccuracyLevel()), 1000)
+                    .setMinUpdateIntervalMillis(500)
+                    .build();
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult result) {
+                    for (Location location : result.getLocations()) {
+                        considerLocation(location);
+                    }
+                    if (hasTargetFix()) {
+                        stopLocationCapture();
+                    }
+                }
+            };
+            locationClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper());
+        } catch (SecurityException e) {
+            Log.w(TAG, "Location unavailable; proceeding without GPS", e);
+        }
+    }
+
+    private void stopLocationCapture() {
+        if (locationClient != null && locationCallback != null) {
+            locationClient.removeLocationUpdates(locationCallback);
+        }
+        locationCallback = null;
+    }
+
+    private static long ageMs(Location location) {
+        return (SystemClock.elapsedRealtimeNanos() - location.getElapsedRealtimeNanos()) / 1_000_000;
+    }
+
+    private void considerLocation(Location location) {
+        if (location == null || !location.hasAccuracy()) return;
+        if (ageMs(location) > MAX_CACHED_LOCATION_AGE_MS) return;
+
+        Location current = currentLocation;
+        boolean currentIsStale = current != null && ageMs(current) > MAX_CACHED_LOCATION_AGE_MS;
+        if (current == null || currentIsStale || location.getAccuracy() <= current.getAccuracy()) {
+            currentLocation = location;
+        }
+    }
+
+    private boolean hasTargetFix() {
+        return currentLocation != null && currentLocation.getAccuracy() <= targetAccuracy;
     }
 
     private void startScanner(Activity activity) {
@@ -202,6 +318,7 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
                         WritableMap errorResponse = new WritableNativeMap();
                         errorResponse.putBoolean("error", true);
                         errorResponse.putString("errorMessage", e.getMessage());
+                        stopLocationCapture();
                         if (scannerCallback != null) {
                             scannerCallback.invoke(errorResponse);
                             scannerCallback = null;
@@ -213,6 +330,7 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
                     WritableMap errorResponse = new WritableNativeMap();
                     errorResponse.putBoolean("error", true);
                     errorResponse.putString("errorMessage", e.getMessage());
+                    stopLocationCapture();
                     if (scannerCallback != null) {
                         scannerCallback.invoke(errorResponse);
                         scannerCallback = null;
@@ -221,6 +339,7 @@ public class DocumentScannerModule extends com.docscanner.NativeDocumentScannerS
     }
 
     private void handleScanResult(int resultCode, Intent data) {
+        stopLocationCapture();
         if (scannerCallback == null) {
             return;
         }

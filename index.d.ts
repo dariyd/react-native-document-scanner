@@ -82,6 +82,17 @@ export interface PdfObject {
  * - `base_with_filter`: base + image filters (grayscale, auto enhancement)
  * - `full`: base_with_filter + ML-enabled cleaning (erase stains, fingers, etc.)
  */
+/**
+ * Target accuracy for the GPS location embedded in scanned images.
+ *
+ * | Level | Target | Permission needed |
+ * |---|---|---|
+ * | `approximate` | ~3 km | approximate (iOS reduced / Android coarse) |
+ * | `balanced` | ~100 m | precise (iOS full / Android fine) |
+ * | `precise` | best available (~10 m) | precise |
+ */
+export type LocationAccuracy = 'approximate' | 'balanced' | 'precise';
+
 export type ScannerMode = 'base' | 'base_with_filter' | 'full';
 
 export interface ScanResult {
@@ -139,15 +150,61 @@ export interface ScanOptions {
 
   /**
    * If true, includes GPS coordinates in the EXIF metadata
-   * Requires location permission (the package will request it automatically)
-   * If permission is denied, scanning still works but GPS fields are skipped
+   * Requires location permission (requested automatically unless
+   * `requestLocationPermission` is false)
+   * If permission is not granted, scanning still works but GPS fields are skipped
+   *
+   * Location is best-effort and never delays the camera: a recent cached fix
+   * (< 5 minutes old) is used immediately, and location updates run while the
+   * user scans, keeping the most accurate fix. The best fix obtained when the
+   * scan is saved is embedded; `GPSHorizontalAccuracy` and `GPSDateTimeUTC`
+   * report how precise it is and when it was taken.
    *
    * iOS: Requires NSLocationWhenInUseUsageDescription in Info.plist
-   * Android: Requires ACCESS_FINE_LOCATION permission
+   * Android: Requires ACCESS_COARSE_LOCATION (approximate) and/or
+   * ACCESS_FINE_LOCATION (balanced / precise)
    *
    * @default false
    */
   includeLocationExif?: boolean;
+
+  /**
+   * Target accuracy for the embedded location — see {@link LocationAccuracy}.
+   * Sets the accuracy requested from the OS, when location updates stop, and
+   * which permission level is asked for. If only a lower permission level is
+   * granted, the best fix obtainable at that level is embedded.
+   *
+   * Only applies when `includeLocationExif` is true.
+   *
+   * @default 'precise'
+   */
+  locationAccuracy?: LocationAccuracy;
+
+  /**
+   * Whether the scanner may prompt for location permission.
+   *
+   * `true`: if the permission level needed for `locationAccuracy` is not yet
+   * granted, the scanner asks for exactly that level before the camera opens
+   * (never when it is already granted or has been denied).
+   *
+   * `false`: the scanner never prompts. GPS is embedded only if permission is
+   * already granted — use this when your app asks for location itself (e.g.
+   * with its own explanation screen before scanning).
+   *
+   * Only applies when `includeLocationExif` is true.
+   *
+   * @default true
+   */
+  requestLocationPermission?: boolean;
+
+  /**
+   * **iOS only.** Key of an entry in `NSLocationTemporaryUsageDescriptionDictionary`.
+   * When set, and the user has granted only approximate location while
+   * `locationAccuracy` needs precise, the scanner asks for temporary precise
+   * location (if `requestLocationPermission` is true). Without it, no upgrade
+   * is asked and the approximate location is used.
+   */
+  locationPurposeKey?: string;
 
   /**
    * Cap the encoded image's long edge at this many pixels. Both
