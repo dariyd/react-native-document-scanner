@@ -4,8 +4,13 @@
 #import "VisionKit/VisionKit.h"
 #import "VisionKit/VNDocumentCameraViewController.h"
 #import <React/RCTUtils.h>
+#import <React/RCTLog.h>
 #import <ImageIO/ImageIO.h>
+// RNDS_DISABLE_LOCATION=1 (set from the app's Podfile, see the podspec) builds
+// the module without CoreLocation, so App Store checks find no location API.
+#if !RNDS_DISABLE_LOCATION
 #import <CoreLocation/CoreLocation.h>
+#endif
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
 
@@ -18,6 +23,11 @@ using namespace facebook::react;
 
 @property (nonatomic, strong) RCTResponseSenderBlock callback;
 @property (nonatomic, copy) NSDictionary *options;
+@end
+
+#if !RNDS_DISABLE_LOCATION
+@interface DocumentScanner () <CLLocationManagerDelegate>
+
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) CLLocation *currentLocation;
 // Target accuracy (metres) for the current scan: location updates stop once
@@ -29,6 +39,7 @@ using namespace facebook::react;
 
 // A cached fix older than this is not used to seed the scan.
 static const NSTimeInterval kMaxCachedLocationAge = 300.0;
+#endif
 
 
 @interface DocumentScanner (VNDocumentCameraViewControllerDelegate) <VNDocumentCameraViewControllerDelegate>
@@ -101,10 +112,17 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 {
     self.callback = callback;
     self.options = options;
+
+    BOOL includeLocationExif = [options[@"includeLocationExif"] boolValue];
+#if RNDS_DISABLE_LOCATION
+    if (includeLocationExif) {
+        RCTLogWarn(@"DocumentScanner: includeLocationExif is ignored because location was disabled at build time (RNDS_DISABLE_LOCATION).");
+    }
+    [self presentScanner];
+#else
     self.currentLocation = nil;
     self.awaitingPermission = NO;
 
-    BOOL includeLocationExif = [options[@"includeLocationExif"] boolValue];
     if (!includeLocationExif) {
         [self presentScanner];
         return;
@@ -135,8 +153,10 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     }
 
     [self continueWithAuthorizationStatus:status];
+#endif
 }
 
+#if !RNDS_DISABLE_LOCATION
 - (void)continueWithAuthorizationStatus:(CLAuthorizationStatus)status
 {
     if (status != kCLAuthorizationStatusAuthorizedWhenInUse &&
@@ -163,6 +183,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     [self startLocationCapture];
     [self presentScanner];
 }
+#endif
 
 - (void)presentScanner
 {
@@ -173,6 +194,9 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 
 #pragma mark - Location
 
+#if RNDS_DISABLE_LOCATION
+- (void)stopLocationCapture {}
+#else
 - (CLAuthorizationStatus)authorizationStatus
 {
     if (@available(iOS 14.0, *)) {
@@ -281,6 +305,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
         [self stopLocationCapture];
     }
 }
+#endif
 
 #pragma mark - EXIF
 
@@ -322,6 +347,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     return tiffDict;
 }
 
+#if !RNDS_DISABLE_LOCATION
 - (NSDictionary *)buildGpsDictionaryFromLocation:(CLLocation *)location
 {
     if (!location) return nil;
@@ -356,6 +382,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 
     return gpsDict;
 }
+#endif
 
 - (NSData *)imageDataWithExif:(UIImage *)image fileType:(NSString *)fileType
 {
@@ -384,6 +411,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     // TIFF dictionary
     properties[(__bridge NSString *)kCGImagePropertyTIFFDictionary] = [self buildTiffDictionary];
 
+#if !RNDS_DISABLE_LOCATION
     // GPS dictionary (if location available)
     if (self.currentLocation) {
         NSDictionary *gpsDict = [self buildGpsDictionaryFromLocation:self.currentLocation];
@@ -391,6 +419,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
             properties[(__bridge NSString *)kCGImagePropertyGPSDictionary] = gpsDict;
         }
     }
+#endif
 
     // Set JPEG compression quality
     if ([fileType isEqualToString:@"jpg"]) {
@@ -419,6 +448,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     exifResponse[@"Model"] = tiffDict[(__bridge NSString *)kCGImagePropertyTIFFModel];
     exifResponse[@"Software"] = tiffDict[(__bridge NSString *)kCGImagePropertyTIFFSoftware];
 
+#if !RNDS_DISABLE_LOCATION
     // GPS fields
     if (self.currentLocation) {
         CLLocationCoordinate2D coord = self.currentLocation.coordinate;
@@ -432,6 +462,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
         formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
         exifResponse[@"GPSDateTimeUTC"] = [formatter stringFromDate:self.currentLocation.timestamp];
     }
+#endif
 
     return exifResponse;
 }

@@ -160,7 +160,8 @@ export interface ScanOptions {
    * scan is saved is embedded; `GPSHorizontalAccuracy` and `GPSDateTimeUTC`
    * report how precise it is and when it was taken.
    *
-   * iOS: Requires NSLocationWhenInUseUsageDescription in Info.plist
+   * iOS: Requires NSLocationWhenInUseUsageDescription in Info.plist.
+   * Ignored when the app is built with RNDS_DISABLE_LOCATION=1 (see README)
    * Android: Requires ACCESS_COARSE_LOCATION (approximate) and/or
    * ACCESS_FINE_LOCATION (balanced / precise)
    *

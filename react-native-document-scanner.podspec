@@ -20,6 +20,14 @@ Pod::Spec.new do |s|
   # Link VisionKit for VNDocumentCameraViewController
   s.frameworks   = ["VisionKit"]
 
+  # Apps that never use includeLocationExif can build without CoreLocation, so
+  # App Store checks don't ask for a location purpose string (ITMS-90683).
+  # Opt in with ENV['RNDS_DISABLE_LOCATION'] = '1' in the Podfile.
+  location_xcconfig = ENV['RNDS_DISABLE_LOCATION'] == '1' ?
+    { "GCC_PREPROCESSOR_DEFINITIONS" => "$(inherited) RNDS_DISABLE_LOCATION=1" } : {}
+  # Set before install_modules_dependencies, which keeps existing keys.
+  s.pod_target_xcconfig = location_xcconfig
+
   # Use install_modules_dependencies helper for React Native 0.71+
   if respond_to?(:install_modules_dependencies, true)
     install_modules_dependencies(s)
@@ -33,7 +41,7 @@ Pod::Spec.new do |s|
           "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
           "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
           "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
-      }
+      }.merge(location_xcconfig)
       s.dependency "React-Codegen"
       s.dependency "RCT-Folly"
       s.dependency "RCTRequired"

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `locationAccuracy` — `'approximate' | 'balanced' | 'precise'` target accuracy for the embedded location; also sets which permission level is requested (default `'precise'`, as before)
 - `requestLocationPermission` — set `false` to never prompt from the scanner; GPS is embedded only if permission is already granted (default `true`, as before)
 - **iOS:** `locationPurposeKey` — optional purpose key to ask for temporary precise location when the user granted only approximate
+- **iOS:** `ENV['RNDS_DISABLE_LOCATION'] = '1'` in the Podfile builds the module without CoreLocation, so apps that never use location don't get the App Store ITMS-90683 warning about a missing location purpose string (closes [#9](https://github.com/dariyd/react-native-document-scanner/issues/9))
 
 ### Fixed
 - The camera no longer waits for a GPS fix before opening (10–30 s, or longer with a poor signal). Location is now best-effort: a recent cached fix is used immediately and updates run while the user scans; the most accurate fix obtained is embedded
