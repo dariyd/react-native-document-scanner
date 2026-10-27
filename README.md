@@ -203,6 +203,9 @@ The `callback` will be called with a response object, refer to [The Response Obj
 | includeBase64       | ✅  | ✅      | If true, creates base64 string of the image (Avoid using on large image files due to performance)                                         |
 | includeExif         | ✅  | ✅      | If true, embeds EXIF metadata (timestamps, device info, dimensions) in the image file and returns it in the response (default: false)      |
 | includeLocationExif | ✅  | ✅      | If true, also embeds GPS coordinates in EXIF. Requires location permission — see [Location Permission Setup](#location-permission-setup) (default: false) |
+| locationAccuracy    | ✅  | ✅      | Target accuracy of the embedded location: `'approximate'` (~3 km), `'balanced'` (~100 m) or `'precise'` (best). Also sets which permission level is needed — see [Location Accuracy](#location-accuracy) (default: `'precise'`) |
+| requestLocationPermission | ✅ | ✅  | If false, the scanner never prompts for location permission; GPS is embedded only when permission is already granted. Use when your app asks for location itself (default: true) |
+| locationPurposeKey  | ✅  | ❌      | Key in `NSLocationTemporaryUsageDescriptionDictionary`. When set, a user who granted only approximate location is asked for temporary precise location if `locationAccuracy` needs it (default: none) |
 | maxWidth            | ✅  | ✅      | Max width in pixels. If the scanned image is wider, it is scaled down before encoding (aspect ratio preserved). `0` or omitted = no cap (default: 0) |
 | maxHeight           | ✅  | ✅      | Max height in pixels. Works together with `maxWidth` — the smaller scale factor wins so neither side exceeds its cap. `0` or omitted = no cap (default: 0) |
 | pageLimit           | ❌  | ✅      | ⚠️ Android only. Max number of pages per scan session. Values below 1 are treated as 1 (default: 10)                                    |
@@ -279,7 +282,7 @@ When `includeExif` is `true`, each image includes an `exif` object with the foll
 
 ## Location Permission Setup
 
-When using `includeLocationExif: true`, the package automatically requests location permission. However, you must add the required permission keys to your app:
+When using `includeLocationExif: true`, the package requests location permission when needed (unless `requestLocationPermission: false`). You must add the required permission keys to your app:
 
 ### iOS
 
@@ -296,10 +299,23 @@ No additional setup required. The package declares `ACCESS_FINE_LOCATION` and `A
 
 ### Permission Behavior
 
-- If permission has **not been requested before**, the system dialog will appear automatically
-- If permission was **already granted**, no dialog is shown — location is fetched immediately
+- If the permission level needed for `locationAccuracy` has **not been granted yet**, the system dialog appears before the camera opens — asking for exactly that level (approximate for `'approximate'`, precise otherwise)
+- If permission was **already granted** at that level, no dialog is shown
 - If permission was **denied**, GPS fields are silently skipped and scanning proceeds normally
+- With `requestLocationPermission: false` the scanner **never** shows a dialog — ask for location in your app before scanning if you want GPS
 - Location permission is **only requested when `includeLocationExif: true`** — it has no effect otherwise
+
+### Location Accuracy
+
+Location is **best-effort and never delays the camera**. The scanner opens immediately; a recent cached fix (less than 5 minutes old) is used straight away, and location updates run while the user scans, keeping the most accurate fix. Updates stop as soon as a fix reaches the `locationAccuracy` target, or when the scanner closes. The best fix obtained is embedded when the scan is saved — `GPSHorizontalAccuracy` and `GPSDateTimeUTC` tell you how precise it is and when it was taken.
+
+| `locationAccuracy` | Target | Permission needed | iOS | Android |
+|---|---|---|---|---|
+| `'approximate'` | ~3 km | approximate | `kCLLocationAccuracyThreeKilometers` | `ACCESS_COARSE_LOCATION`, `PRIORITY_LOW_POWER` |
+| `'balanced'` | ~100 m | precise | `kCLLocationAccuracyHundredMeters` | `ACCESS_FINE_LOCATION`, `PRIORITY_BALANCED_POWER_ACCURACY` |
+| `'precise'` | best | precise | `kCLLocationAccuracyBest` | `ACCESS_FINE_LOCATION`, `PRIORITY_HIGH_ACCURACY` |
+
+If only approximate permission is granted while a precise level is requested, the best approximate fix is embedded. A very fast scan with no cached fix, or no location signal (e.g. airplane mode without a recent fix), simply produces an image without GPS.
 
 ## Platform Differences
 

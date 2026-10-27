@@ -20,8 +20,15 @@ using namespace facebook::react;
 @property (nonatomic, copy) NSDictionary *options;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) CLLocation *currentLocation;
-@property (nonatomic, copy) void (^locationCompletion)(CLLocation * _Nullable);
+// Target accuracy (metres) for the current scan: location updates stop once
+// a fix this good arrives, or when the scanner closes.
+@property (nonatomic, assign) CLLocationAccuracy targetAccuracy;
+// YES while the scanner waits for the user's answer to a permission prompt.
+@property (nonatomic, assign) BOOL awaitingPermission;
 @end
+
+// A cached fix older than this is not used to seed the scan.
+static const NSTimeInterval kMaxCachedLocationAge = 300.0;
 
 
 @interface DocumentScanner (VNDocumentCameraViewControllerDelegate) <VNDocumentCameraViewControllerDelegate>
@@ -66,6 +73,15 @@ RCT_EXPORT_MODULE()
     if (options.maxHeight().has_value()) {
         opts[@"maxHeight"] = @(options.maxHeight().value());
     }
+    if (options.locationAccuracy() != nil) {
+        opts[@"locationAccuracy"] = options.locationAccuracy();
+    }
+    if (options.requestLocationPermission().has_value()) {
+        opts[@"requestLocationPermission"] = @(options.requestLocationPermission().value());
+    }
+    if (options.locationPurposeKey() != nil) {
+        opts[@"locationPurposeKey"] = options.locationPurposeKey();
+    }
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self launchDocScanner:opts callback:callback];
@@ -86,19 +102,66 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
     self.callback = callback;
     self.options = options;
     self.currentLocation = nil;
+    self.awaitingPermission = NO;
 
     BOOL includeLocationExif = [options[@"includeLocationExif"] boolValue];
-
-    if (includeLocationExif) {
-        [self requestLocationWithCompletion:^(CLLocation * _Nullable location) {
-            self.currentLocation = location;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentScanner];
-            });
-        }];
-    } else {
+    if (!includeLocationExif) {
         [self presentScanner];
+        return;
     }
+
+    // Location is best-effort and never delays the camera: at most we wait
+    // for the user's answer to a permission prompt, never for a fix.
+    NSString *level = options[@"locationAccuracy"];
+    self.targetAccuracy = [self targetAccuracyForLevel:level];
+
+    if (!self.locationManager) {
+        self.locationManager = [[CLLocationManager alloc] init];
+        self.locationManager.delegate = self;
+    }
+    self.locationManager.desiredAccuracy = [self desiredAccuracyForLevel:level];
+
+    CLAuthorizationStatus status = [self authorizationStatus];
+    if (status == kCLAuthorizationStatusNotDetermined) {
+        if ([self mayRequestPermission]) {
+            // The scanner is presented from didChangeAuthorizationStatus:,
+            // once the user has answered.
+            self.awaitingPermission = YES;
+            [self.locationManager requestWhenInUseAuthorization];
+        } else {
+            [self presentScanner];
+        }
+        return;
+    }
+
+    [self continueWithAuthorizationStatus:status];
+}
+
+- (void)continueWithAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    if (status != kCLAuthorizationStatusAuthorizedWhenInUse &&
+        status != kCLAuthorizationStatusAuthorizedAlways) {
+        // Denied / restricted — scan without GPS.
+        [self presentScanner];
+        return;
+    }
+
+    if ([self needsFullAccuracyUpgrade]) {
+        if (@available(iOS 14.0, *)) {
+            [self.locationManager requestTemporaryFullAccuracyAuthorizationWithPurposeKey:self.options[@"locationPurposeKey"]
+                                                                               completion:^(NSError * _Nullable error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // Declined → continue with the reduced-accuracy tier.
+                    [self startLocationCapture];
+                    [self presentScanner];
+                });
+            }];
+            return;
+        }
+    }
+
+    [self startLocationCapture];
+    [self presentScanner];
 }
 
 - (void)presentScanner
@@ -110,64 +173,112 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 
 #pragma mark - Location
 
-- (void)requestLocationWithCompletion:(void (^)(CLLocation * _Nullable))completion
+- (CLAuthorizationStatus)authorizationStatus
 {
-    self.locationCompletion = completion;
-
-    if (!self.locationManager) {
-        self.locationManager = [[CLLocationManager alloc] init];
-        self.locationManager.delegate = self;
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    }
-
-    CLAuthorizationStatus status;
     if (@available(iOS 14.0, *)) {
-        status = self.locationManager.authorizationStatus;
-    } else {
-        status = [CLLocationManager authorizationStatus];
+        return self.locationManager.authorizationStatus;
     }
+    return [CLLocationManager authorizationStatus];
+}
 
-    if (status == kCLAuthorizationStatusNotDetermined) {
-        [self.locationManager requestWhenInUseAuthorization];
-    } else if (status == kCLAuthorizationStatusAuthorizedWhenInUse ||
-               status == kCLAuthorizationStatusAuthorizedAlways) {
-        [self.locationManager requestLocation];
-    } else {
-        // Permission denied — skip GPS
-        if (self.locationCompletion) {
-            self.locationCompletion(nil);
-            self.locationCompletion = nil;
-        }
+- (BOOL)mayRequestPermission
+{
+    id value = self.options[@"requestLocationPermission"];
+    return value == nil ? YES : [value boolValue];
+}
+
+- (BOOL)levelNeedsPreciseLocation
+{
+    return ![self.options[@"locationAccuracy"] isEqualToString:@"approximate"];
+}
+
+// Granted, but only approximate, while the level needs precise — and the
+// consumer allows asking and supplied a purpose key for the upgrade prompt.
+- (BOOL)needsFullAccuracyUpgrade
+{
+    if (@available(iOS 14.0, *)) {
+        NSString *purposeKey = self.options[@"locationPurposeKey"];
+        return [self levelNeedsPreciseLocation] &&
+               [self mayRequestPermission] &&
+               purposeKey.length > 0 &&
+               self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationReducedAccuracy;
     }
+    return NO;
+}
+
+- (CLLocationAccuracy)desiredAccuracyForLevel:(NSString *)level
+{
+    if ([level isEqualToString:@"approximate"]) return kCLLocationAccuracyThreeKilometers;
+    if ([level isEqualToString:@"balanced"]) return kCLLocationAccuracyHundredMeters;
+    return kCLLocationAccuracyBest;
+}
+
+- (CLLocationAccuracy)targetAccuracyForLevel:(NSString *)level
+{
+    if ([level isEqualToString:@"approximate"]) return 3000.0;
+    if ([level isEqualToString:@"balanced"]) return 100.0;
+    return 10.0;
+}
+
+// Seed from a recent cached fix, then stream updates in parallel with the
+// camera, keeping the best fix so far. Whatever we hold when the scan is
+// saved is stamped into the EXIF.
+- (void)startLocationCapture
+{
+    [self considerLocation:self.locationManager.location];
+    if (![self hasTargetFix]) {
+        [self.locationManager startUpdatingLocation];
+    }
+}
+
+- (void)stopLocationCapture
+{
+    [self.locationManager stopUpdatingLocation];
+}
+
+- (void)considerLocation:(CLLocation *)location
+{
+    if (!location || location.horizontalAccuracy < 0) return;
+    if (fabs([location.timestamp timeIntervalSinceNow]) > kMaxCachedLocationAge) return;
+
+    CLLocation *current = self.currentLocation;
+    BOOL currentIsStale = current && fabs([current.timestamp timeIntervalSinceNow]) > kMaxCachedLocationAge;
+    if (!current || currentIsStale || location.horizontalAccuracy <= current.horizontalAccuracy) {
+        self.currentLocation = location;
+    }
+}
+
+- (BOOL)hasTargetFix
+{
+    return self.currentLocation && self.currentLocation.horizontalAccuracy <= self.targetAccuracy;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
-    if (status == kCLAuthorizationStatusAuthorizedWhenInUse ||
-        status == kCLAuthorizationStatusAuthorizedAlways) {
-        [self.locationManager requestLocation];
-    } else if (status != kCLAuthorizationStatusNotDetermined) {
-        // Denied or restricted — skip GPS
-        if (self.locationCompletion) {
-            self.locationCompletion(nil);
-            self.locationCompletion = nil;
-        }
-    }
+    // Also fires when the manager is created; only act on the answer to our prompt.
+    if (!self.awaitingPermission || status == kCLAuthorizationStatusNotDetermined) return;
+    self.awaitingPermission = NO;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self continueWithAuthorizationStatus:status];
+    });
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
-    if (self.locationCompletion) {
-        self.locationCompletion(locations.lastObject);
-        self.locationCompletion = nil;
+    for (CLLocation *location in locations) {
+        [self considerLocation:location];
+    }
+    if ([self hasTargetFix]) {
+        [self stopLocationCapture];
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    if (self.locationCompletion) {
-        self.locationCompletion(nil);
-        self.locationCompletion = nil;
+    // kCLErrorLocationUnknown is transient — the manager keeps trying.
+    // Anything else ends the attempt; the scan keeps whatever fix it has.
+    if (error.code != kCLErrorLocationUnknown) {
+        [self stopLocationCapture];
     }
 }
 
@@ -428,6 +539,7 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
                                          maxHeight:maxHeight];
         [scannedImages addObject:[self mapImageToAsset:capped]];
     }
+    [self stopLocationCapture];
 
     [controller dismissViewControllerAnimated:true completion:^{
         self.callback(@[@{ @"images": scannedImages }]);
@@ -466,12 +578,14 @@ RCT_EXPORT_METHOD(launchScanner:(NSDictionary *)options callback:(RCTResponseSen
 }
 
 - (void)documentCameraViewControllerDidCancel:(VNDocumentCameraViewController *)controller {
+    [self stopLocationCapture];
     [controller dismissViewControllerAnimated:true completion:^{
         self.callback(@[@{ @"didCancel": @YES }]);
     }];
 }
 
 - (void)documentCameraViewController:(VNDocumentCameraViewController *)controller didFailWithError:(NSError *)error {
+    [self stopLocationCapture];
     [controller dismissViewControllerAnimated:true completion:^{
         self.callback(@[@{ @"error": @YES, @"errorMessage": error.localizedFailureReason ?: error.localizedDescription }]);
     }];

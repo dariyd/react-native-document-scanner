@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `locationAccuracy` — `'approximate' | 'balanced' | 'precise'` target accuracy for the embedded location; also sets which permission level is requested (default `'precise'`, as before)
+- `requestLocationPermission` — set `false` to never prompt from the scanner; GPS is embedded only if permission is already granted (default `true`, as before)
+- **iOS:** `locationPurposeKey` — optional purpose key to ask for temporary precise location when the user granted only approximate
+
+### Fixed
+- The camera no longer waits for a GPS fix before opening (10–30 s, or longer with a poor signal). Location is now best-effort: a recent cached fix is used immediately and updates run while the user scans; the most accurate fix obtained is embedded
+- **Android:** the permission result is now awaited before the scanner opens, so GPS is available on the first scan after granting
+
 ## [2.1.1] - 2026-09-14
 
 ### Added
