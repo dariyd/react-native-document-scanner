@@ -317,6 +317,16 @@ Location is **best-effort and never delays the camera**. The scanner opens immed
 
 If only approximate permission is granted while a precise level is requested, the best approximate fix is embedded. A very fast scan with no cached fix, or no location signal (e.g. airplane mode without a recent fix), simply produces an image without GPS.
 
+### iOS: Building Without Location
+
+The location code is built into your app even if you never set `includeLocationExif`, so App Store Connect may warn about a missing `NSLocationWhenInUseUsageDescription` (ITMS-90683). If your app never uses `includeLocationExif`, leave the location code out by adding this line near the top of `ios/Podfile`, then run `pod install`:
+
+```ruby
+ENV['RNDS_DISABLE_LOCATION'] = '1'
+```
+
+You can also set it for one run instead: `RNDS_DISABLE_LOCATION=1 pod install`. With location left out, `includeLocationExif` is ignored and a warning is logged in development.
+
 ## Platform Differences
 
 While both platforms provide similar functionality, there are some minor differences:
